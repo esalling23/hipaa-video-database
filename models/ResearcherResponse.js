@@ -40,7 +40,13 @@ ResearcherResponse.add({
 		ref: 'Question',
 		many: false
 	},
-	answer: { type: String, label: 'Response' }
+	answer: { type: String, label: 'Response' },
+	researcher: {
+		label: 'Researcher',
+		type: Types.Relationship,
+		ref: 'User',
+		many: false
+	}
 
 });
 

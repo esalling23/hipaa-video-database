@@ -23,7 +23,8 @@ var ClientQuestions = new keystone.List('ClientQuestions',
 	{
 		label: 'Client Questions',
 		singular: 'Client Questions',
-		nodelete: false
+		nodelete: false,
+		track: true
 	});
 
 /**

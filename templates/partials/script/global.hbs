@@ -125,17 +125,24 @@
 			var values = {};
 			$('#upload-form .question').each(function() {
 				console.log(this.id);
-				if ($(this).find('input')) {
+				if ($(this).find('input').length >= 1) {
 
-					if ($(this).find('input').prop("type") == "text")
-		        values[this.id] = $(this).val();
-					else if ($(this).find('input').prop("type") == "radio")
-						values[this.id] = $(this).is(':checked');
+					if ($(this).find('input').prop("type") == "text") {
+						if ($(this).find('input').val().length >= 1)
+							values[this.id] = $(this).find('input').val();
+					}
+					else if ($(this).find('input').prop("type") == "radio"){
+						var thisRadio = $(this).find('input:checked');
+						console.log(thisRadio);
+						values[this.id] = $(thisRadio).prop("name");
+
+					}
 
 				} else if ($(this).is('select')) {
 
 					var selected = $(this).find('option:selected');
 					values[this.id] = $(selected).val();
+
 				}
 
 	    });
@@ -165,17 +172,22 @@
 
 	var researchContextSetup = function(group) {
 
+		var href = location.href;
+		href = href.split("/")[href.split("/").length - 1];
+
 			$('body #uploaded').on('timeupdate', function(ev) {
 				var time = $('#uploaded')["0"].currentTime;
 				$('span#current-timestamp').text(time);
 			});
 
 			$('body #add-timestamp').on('click touchstart tap', function(e) {
-				console.log(e);
+				console.log(location);
+
 				var data = {
 					id: group,
 					time: $('#uploaded')["0"].currentTime,
-					note: $('#timestamp-form input').val()
+					note: $('#timestamp-form input').val(),
+					researcher: href
 				};
 
 				console.log(data);
@@ -198,9 +210,9 @@
 					if ($(this).find('input')) {
 
 						if ($(this).find('input').prop("type") == "text")
-			        values[this.id] = $(this).val();
+			        values[this.id] = $(this).find('input').val();
 						else if ($(this).find('input').prop("type") == "radio")
-							values[this.id] = $(this).is(':checked');
+							values[this.id] = $(this).find('input').is(':checked').prop("name");
 
 					} else if ($(this).is('select')) {
 
@@ -210,7 +222,13 @@
 					}
 
 		    });
-				$.post("/api/research/", { group: group, data: values },
+
+				var data = {
+					group: group,
+					responses: values,
+					researcher: href
+				}
+				$.post("/api/research/", data,
 					function( log ) {
 						console.log(log);
 

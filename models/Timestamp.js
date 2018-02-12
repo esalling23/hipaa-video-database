@@ -23,7 +23,8 @@ var Timestamp = new keystone.List('Timestamp',
 	{
 		label: 'Timestamps',
 		singular: 'Timestamp',
-		nodelete: false
+		nodelete: false,
+		track: true
 	});
 
 /**
@@ -35,7 +36,7 @@ Timestamp.add({
 	name: { type: String, default: 'Response', required: true, initial: true },
 	time: { type: String, label: 'Time' },
 	notes: { type: String, label: 'Notes' },
-	createdBy: {
+	researcher: {
 		type: Types.Relationship,
 		ref: 'User',
 		many:false

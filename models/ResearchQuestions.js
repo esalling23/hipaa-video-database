@@ -23,7 +23,8 @@ var ResearchQuestions = new keystone.List('ResearchQuestions',
 	{
 		label: 'Research Questions',
 		singular: 'Research Questions',
-		nodelete: false
+		nodelete: false, 
+		track: true
 	});
 
 /**

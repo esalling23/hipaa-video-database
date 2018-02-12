@@ -5,13 +5,13 @@
   <form id="upload-form">
     {{#each questionaire.questions}}
       {{#ifeq this.type "Text"}}
-      <p id="{{idIfy this.question}}" class="question">{{this.question}}<br>
+      <p id="{{this._id}}" class="question">{{this.question}}<br>
         <input name="{{this.question}}" class="form-control" label="{{this.question}}" type="text"></p>
       {{/ifeq}}
 
 
       {{#ifeq this.type "Bubble Select"}}
-        <div class="radio-group question" id="{{idIfy this.question}}">
+        <div class="radio-group question" id="{{this._id}}">
         {{#each this.options}}
           <div class="radio-wrapper"><input type="radio" name="{{this}}" value="{{this}}"> {{this}}</div>
         {{/each}}
@@ -19,7 +19,7 @@
       {{/ifeq}}
 
       {{#ifeq this.type "Dropdown"}}
-        <select id="{{idIfy this.question}}" class="question">
+        <select id="{{this._id}}" class="question">
           <option value="Select">Select Below</option>
           {{#each this.options}}
             <option value="{{this}}">{{this}}</option>

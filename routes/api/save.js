@@ -13,32 +13,25 @@ exports.responses = function(req, res) {
 
    Group.model.findOne({ _id: currentGroup }, function(err, group) {
      console.log(group, "is the group we found")
-      Questions.model.find({ client: true }).exec(function(err, result) {
-        questions = result;
-        console.log(questions);
 
-        _.each(req.body.responses, function(value, key) {
+      console.log(req.body.responses);
 
-          var id = key.replace("-", " ");
+      _.each(req.body.responses, function(value, key) {
 
-          var thisQuestion = _.findWhere(questions, { question: id });
-
-          newResponseGroup = new Response.model({
-            question: thisQuestion._id,
-            answer: value
-          });
-
-          newResponseGroup.save(function(err, post) {
-            group.responses.push(post);
-
-            group.save(function(err, updatedGroup) {
-              res.send('success!');
-            });
-
-          });
-
+        newResponseGroup = new Response.model({
+          question: key,
+          answer: value
         });
 
+        newResponseGroup.save(function(err, post) {
+          group.responses.push(post);
+        });
+
+      });
+
+      group.save(function(err, updatedGroup) {
+        console.log("saved!", updatedGroup);
+        res.send( updatedGroup );
       });
 
    });
@@ -85,7 +78,7 @@ exports.timestamp = function(req, res) {
 
      var thisTimestamp = new Timestamp.model({
        time: req.body.time,
-       createdBy: group.client,
+       researcher: req.body.researcher,
        notes: req.body.note
      });
 
@@ -110,37 +103,30 @@ exports.timestamp = function(req, res) {
 }
 
 exports.research = function(req, res) {
-    var currentGroup = req.body.group;
-    console.log(currentGroup, "is the current Group")
 
-   Group.model.findOne({ _id: currentGroup }, function(err, group) {
-     console.log(group, "is the group we found")
+   Group.model.findOne({ _id: req.body.group }, function(err, group) {
+       console.log(group, "is the group we found")
 
-     Questions.model.find({}).exec(function(err, result) {
-       questions = result;
-       console.log(questions);
+       console.log(req.body.responses);
 
-       _.each(req.body.data, function(value, key) {
+       _.each(req.body.responses, function(value, key) {
 
-         var id = key.replace("-", " ");
-
-         var thisQuestion = _.findWhere(questions, { question: id });
+         console.log(value, key);
 
          newResponseGroup = new ResearcherResponse.model({
-           question: thisQuestion._id,
-           answer: value
+           question: key,
+           answer: value,
+           researcher: req.body.researcher
          });
 
          newResponseGroup.save(function(err, post) {
            group.researcherData.push(post);
 
            group.save(function(err, updatedGroup) {
-             res.send('success!', updatedGroup);
+             res.send( updatedGroup );
            });
 
          });
-
-       });
 
      });
 
