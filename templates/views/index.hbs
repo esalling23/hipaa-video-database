@@ -1,0 +1,38 @@
+{{!< default}}
+{{!--
+/**
+* Engagement Lab Web Suite
+* Developed by Engagement Lab, 2016
+* ==============
+*
+* Index Page sample Template
+* ==========
+*/
+--}}
+
+
+<div class="container-fluid home">
+	<div class="row">
+		<div class="col-md-6">
+			<form id="loginForm">
+				<h3>Login</h3>
+				<input type="text" class="form-control" name="email" placeholder="Email">
+				<input type="password" class="form-control" name="password" placeholder="Password">
+			  <input type="button" class="btn btn-primary form-control" value="Login" id="login">
+			</form>
+
+			<form id="signupForm" style="display:none;">
+				<h3>Signup</h3>
+				<input type="text" class="form-control" name="username" placeholder="Username">
+				<input type="text" class="form-control" name="email" placeholder="Email">
+				<input type="password" class="form-control" name="password" placeholder="Password">
+			  <input type="button" class="btn btn-primary form-control" value="Signup" id="signup">
+			</form>
+
+			<button id="loginToggle" class="btn btn-primary"
+				data-login="Already signed up? Login here"
+				data-signup="Need to create an account? Signup here"></button>
+		</div>
+	</div>
+
+</div> <!-- .container-fluid -->

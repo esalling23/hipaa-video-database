@@ -1,0 +1,110 @@
+@import "core/variables";
+@import "core/mixins";
+@import "core/functions";
+@import "core/fonts";
+
+
+@include font-face(Font-Name, 'https://path/to/cdn/font', null, null, eot woff ttf);
+
+// Use for any elements hidden initilly
+.hidden {
+	visibility: hidden;
+}
+
+// Body
+.body {
+  background-color: white;
+  color: black;
+  font-family: "HalisLight";
+}
+
+.desktop-only {
+	// Hide for mobile
+	@include mobile-only {
+		display: none;
+	}
+}
+.mobile-only {
+	// Hide for desktop
+	@include desktop-and-up {
+		display: none;
+	}
+}
+.buffer {
+		margin-top: 5%;
+}
+
+.main {
+
+}
+
+button, input {
+	border: 1px solid black;
+	text-align: center;
+	margin: 10px auto;
+
+	&:disabled {
+		border: 1px solid grey;
+		color: grey;
+
+	}
+}
+
+video {
+	max-width: 100%;
+}
+
+.modal {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	background: white;
+	text-align: center;
+	padding: 5%;
+	overflow: scroll;
+	
+	video {
+		display: block;
+		margin: 0 auto;
+		max-width: 100%;
+	}
+
+	&.upload {
+		max-height: 150px;
+	}
+
+	&.research {
+
+	}
+
+	form {
+		display: block;
+		padding: 10px;
+		margin: 10px auto;
+
+		input, select {
+			border: 1px solid black;
+			display: block;
+			margin: 0 auto;
+
+			&[type=radio] {
+				display: inline-block;
+			}
+		}
+
+		.radio-group {
+			border: 1px solid black;
+			padding: 4px;
+			margin: 4px;
+		}
+	}
+}
+
+.home {
+
+	#title {
+
+	}
+
+}

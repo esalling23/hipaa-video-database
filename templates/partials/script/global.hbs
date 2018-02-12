@@ -1,0 +1,239 @@
+{{!< default}}
+{{!--
+/**
+ * Uncertainty Project
+ * Developed by Engagement Lab, 2016
+ * ==============
+ *
+ * Script include for global logic
+ * ==========
+ */
+--}}
+
+<script type="text/javascript">
+'use strict';
+
+	$(document).ready(function() {
+
+		{{#ifeq section 'index'}}
+
+		if (localStorage.user) {
+			console.log(JSON.stringify(localStorage.user));
+			// $.post('/api/login', localStorage.user, function(res) {
+			// 	window.location = res.url;
+			// });
+		}
+
+		var login = true;
+		var signupText = $('#loginToggle').data("signup");
+		var loginText = $('#loginToggle').data("login");
+		$('#loginToggle').text(signupText);
+
+		$('#loginToggle').on('click tap touchstart', function(e) {
+
+			e.preventDefault();
+			e.bubbles = false;
+			e.stopImmediatePropagation();
+			e.stopPropagation();
+
+			if (login) {
+				$('body #loginForm').fadeOut(function() {
+					$('#loginToggle').text(loginText);
+					$('#signupForm').fadeIn();
+				});
+			} else {
+				$('body #signupForm').fadeOut(function() {
+					$('#loginToggle').text(signupText);
+					$('#loginForm').fadeIn();
+				});
+			}
+			login = !login;
+		});
+
+		$('body #signup').on('click tap touchstart', function(e) {
+			var data = {
+				email: $('#signupForm input[name="email"]').val(),
+				password: $('#signupForm input[name="password"]').val(),
+				username: $('#signupForm input[name="username"]').val()
+			};
+			$.post('/api/signup', data, function(res) {
+				localStorage.user = JSON.stringify(res.user);
+				console.log(res.user);
+				window.location = res.url;
+			});
+		});
+
+		$('body #login').on('click tap touchstart', function(e) {
+			var data = {
+				email: $('#loginForm input[name="email"]').val(),
+				password: $('#loginForm input[name="password"]').val()
+			};
+			$.post('/api/login', data, function(res) {
+				console.log(res);
+				localStorage.user = JSON.stringify(res.user);
+				console.log(res.user);
+				window.location = res.url;
+			});
+		});
+
+		{{/ifeq}}
+
+		{{#ifeq section 'client'}}
+
+		$('body #uploadVideo').on('click touchstart tap', function(e) {
+			console.log(e);
+			saveVideo();
+
+		});
+
+
+
+		function saveVideo() {
+
+			// start loading
+			$('#loading').fadeIn();
+			var file = $('form #videoCapture')[0].files[0];
+			var reader = new FileReader();
+
+			reader.addEventListener("load", function () {
+				console.log(reader.result);
+				var recordedResult = reader.result;
+				var data = {
+					url: recordedResult,
+					user: localStorage.user
+				};
+
+				$.post("/api/upload/", { data:data },
+					function( upload ) {
+
+						$('#upload-modal').fadeIn(function() {
+							// play(true);
+							$('#recorded')[0].src = upload.url;
+
+							$('#data-send').on('click touchstart tap', function(e) {
+								console.log(e);
+								saveResponses(upload._id);
+							});
+						});
+					});
+			}, false);
+
+			reader.readAsDataURL(file);
+		}
+
+		function saveResponses(group) {
+			var values = {};
+			$('#upload-form .question').each(function() {
+				console.log(this.id);
+				if ($(this).find('input')) {
+
+					if ($(this).find('input').prop("type") == "text")
+		        values[this.id] = $(this).val();
+					else if ($(this).find('input').prop("type") == "radio")
+						values[this.id] = $(this).is(':checked');
+
+				} else if ($(this).is('select')) {
+
+					var selected = $(this).find('option:selected');
+					values[this.id] = $(selected).val();
+				}
+
+	    });
+
+			$.post("/api/saveResponses/", { group: group, responses: values },
+				function( log ) {
+					console.log(log);
+					$('#loading').fadeOut(function() {
+						$('#upload-modal').fadeOut();
+					});
+			});
+
+		}
+
+	{{/ifeq}}
+
+	{{#ifeq section 'researcher'}}
+
+	$('.video-item').on('click', function(e) {
+		$.post("/api/load/researchModal", { group: $(this).data("group") },
+			function( data ) {
+				$('#researcher-modal').html(data.eventData).fadeIn(function() {
+					researchContextSetup(data.group);
+				});
+		});
+	});
+
+	var researchContextSetup = function(group) {
+
+			$('body #uploaded').on('timeupdate', function(ev) {
+				var time = $('#uploaded')["0"].currentTime;
+				$('span#current-timestamp').text(time);
+			});
+
+			$('body #add-timestamp').on('click touchstart tap', function(e) {
+				console.log(e);
+				var data = {
+					id: group,
+					time: $('#uploaded')["0"].currentTime,
+					note: $('#timestamp-form input').val()
+				};
+
+				console.log(data);
+
+				$.post("/api/saveTimestamp/", data,
+					function( log ) {
+						console.log(log);
+				});
+			});
+
+			$('body .timestamp').on('click tap touchstart', function(e) {
+				$('#uploaded')["0"].currentTime = $(this).data("time");
+			});
+
+			$('body #research-send').on('click tap touchstart', function(e) {
+				$('#loading').fadeIn();
+				var values = {};
+				$('#research-form .question').each(function() {
+					console.log(this.id);
+					if ($(this).find('input')) {
+
+						if ($(this).find('input').prop("type") == "text")
+			        values[this.id] = $(this).val();
+						else if ($(this).find('input').prop("type") == "radio")
+							values[this.id] = $(this).is(':checked');
+
+					} else if ($(this).is('select')) {
+
+						var selected = $(this).find('option:selected');
+						values[this.id] = $(selected).val();
+
+					}
+
+		    });
+				$.post("/api/research/", { group: group, data: values },
+					function( log ) {
+						console.log(log);
+
+						$('#loading').fadeOut(function() {
+							$('#research-modal').fadeOut();
+						});
+				});
+			});
+	}
+
+	{{/ifeq}}
+
+		$('.radio-group input[type="radio"]').on('change', function(e){
+			var group = $(this).closest('.radio-wrapper').closest('.radio-group');
+			var otherInputs = $(group).find('input');
+			$.each(otherInputs, function(i, item) {
+				$(item).prop('checked', false);
+			});
+			$(this).prop('checked', true);
+		});
+
+		$('select').select2();
+
+	});
+
+</script>

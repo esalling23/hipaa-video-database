@@ -1,0 +1,27 @@
+{{!< default}}
+{{!--
+/**
+* Engagement Lab Web Suite
+* Developed by Engagement Lab, 2016
+* ==============
+*
+* Index Page sample Template
+* ==========
+*/
+--}}
+
+
+<div class="container-fluid home">
+	<div class="row">
+
+		<h3>Click on a video to start analyzing</h3>
+
+		{{#each uploads}}
+			<div class="video-item" data-group="{{this.id}}">
+				{{this.client.name}}
+			</div>
+		{{/each}}
+
+	</div>
+
+</div> <!-- .container-fluid -->

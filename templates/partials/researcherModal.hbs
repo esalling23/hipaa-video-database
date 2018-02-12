@@ -1,0 +1,52 @@
+<div class="row modal-inner research">
+
+  <video id="uploaded"
+  oncontextmenu="return false;"
+  controls controlsList="nodownload nofullscreen"
+  src="{{group.url}}"></video>
+
+  {{#if group.timestamps}}
+  <div class="timestamp-group">
+    {{#each group.timestamps}}
+    <button class="timestamp" data-time="{{this.time}}">{{this.time}}: {{this.notes}}</button>
+    {{/each}}
+  </div>
+  {{/if}}
+
+  <form id="timestamp-form">
+    Current time: <span id="current-timestamp"></span>
+    <input type="text" class="form-control" placeholder="Notes">
+    <button type="button" class="btn btn-primary" id="add-timestamp">Add Timestamp</button>
+  </form>
+
+  <form id="research-form">
+    {{#each questions}}
+      {{#ifeq this.type "Text"}}
+      <p id="{{this.id}}" class="question">{{this.question}}<br>
+        <input name="{{this.question}}" label="{{this.question}}" type="text"></p>
+      {{/ifeq}}
+
+
+      {{#ifeq this.type "Bubble Select"}}
+        <div class="radio-group question" id="{{this.id}}">
+        {{#each this.options}}
+          <div class="radio-wrapper"><input type="radio" name="{{this}}" value="{{this}}"> {{this}}</div>
+        {{/each}}
+      </div>
+      {{/ifeq}}
+
+      {{#ifeq this.type "Dropdown"}}
+        <select id="{{this.id}}" class="question">
+          <option value="Select">Select Below</option>
+          {{#each this.options}}
+            <option value="{{this}}">{{this}}</option>
+          {{/each}}
+        </select>
+      {{/ifeq}}
+
+    {{/each}}
+
+    <button type="button" id="research-send">Submit</button>
+  </form>
+
+</div>

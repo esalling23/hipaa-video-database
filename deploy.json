@@ -1,0 +1,61 @@
+{
+  "apps" : [{
+    "name": "Repo Name",
+    "script": "server.js",
+    "env_production": {
+      "NODE_ENV": "production"
+    },
+    "env_staging": {
+      "NODE_ENV": "staging"
+    }
+  }],
+  "deploy" : {
+
+    "framework-staging" : {
+      "user": "node",
+      "host": "xxx.xxx.xxx.xx",
+      "repo": "git@github.com:engagementgamelab/repo-name.git",
+      "ref": "origin/master",
+      "path": "/srv/framework",
+      "pre-deploy-local" : "echo 'Cloning and running npm install. Be patient.';",
+      "post-deploy" : "npm i ; grunt compile --sites=repo-name --env staging ; pm2 restart 0 -- repo-name --env staging",
+      "env": {
+        "NODE_ENV": "staging"
+      }
+    },
+
+    "staging" : {
+      "user": "node",
+      "host": "xxx.xxx.xxx.xx",
+      "repo": "git@github.com:engagementgamelab/repo-name.git",
+      "ref": "origin/master",
+      "path": "/srv/repo-name",
+      "pre-deploy-local" : "echo 'NPM linking repo-name and restarting app.'; git pull git@github.com:engagementgamelab/repo-name.git master;",
+      "post-deploy" : "npm i ; cd /srv/framework/current/ ; npm i ; grunt compile --sites=repo-name --env staging ; pm2 restart 0 -- repo-name --env staging"
+    },
+
+    "framework-production" : {
+      "user": "node",
+      "host": "xxx.xxx.xxx.xx",
+      "repo": "git@github.com:engagementgamelab/repo-name.git",
+      "ref": "origin/master",
+      "path": "/srv/framework",
+      "pre-deploy-local" : "echo 'Cloning and running npm install. Be patient.'",
+      "post-deploy" : "npm install ; grunt compile --sites=repo-name --env production ; pm2 restart 0 -- repo-name --env production",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+
+    "production" : {
+      "user": "node",
+      "host": "xxx.xxx.xxx.xx",
+      "repo": "git@github.com:engagementgamelab/repo-name.git",
+      "ref": "origin/production",
+      "path": "/srv/repo-name",
+      "pre-deploy-local" : "echo 'NPM linking repo-name and restarting app.';",
+      "post-deploy" : "npm i ; cd /srv/framework/current/ ; grunt compile --sites=repo-name --env production ; NODE_ENV=production pm2 restart server.js -- repo-name --env production"
+    }
+
+  }
+}
