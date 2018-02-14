@@ -13,12 +13,12 @@
 
     "framework-staging" : {
       "user": "node",
-      "host": "xxx.xxx.xxx.xx",
-      "repo": "git@github.com:engagementgamelab/repo-name.git",
+      "host": "159.65.161.109",
+      "repo": "https://github.com/esalling23/el-web-sdk.git",
       "ref": "origin/master",
       "path": "/srv/framework",
       "pre-deploy-local" : "echo 'Cloning and running npm install. Be patient.';",
-      "post-deploy" : "npm i ; grunt compile --sites=repo-name --env staging ; pm2 restart 0 -- repo-name --env staging",
+      "post-deploy" : "npm i ; grunt compile --sites=video-database-hippa --env staging ; pm2 restart 0 -- video-database-hippa --env staging",
       "env": {
         "NODE_ENV": "staging"
       }
@@ -26,22 +26,22 @@
 
     "staging" : {
       "user": "node",
-      "host": "xxx.xxx.xxx.xx",
-      "repo": "git@github.com:engagementgamelab/repo-name.git",
+      "host": "159.65.161.109",
+      "repo": "https://github.com/esalling23/hipaa-video-database.git",
       "ref": "origin/master",
-      "path": "/srv/repo-name",
-      "pre-deploy-local" : "echo 'NPM linking repo-name and restarting app.'; git pull git@github.com:engagementgamelab/repo-name.git master;",
-      "post-deploy" : "npm i ; cd /srv/framework/current/ ; npm i ; grunt compile --sites=repo-name --env staging ; pm2 restart 0 -- repo-name --env staging"
+      "path": "/srv/app",
+      "pre-deploy-local" : "echo 'NPM linking video-database-hippa and restarting app.'; git pull https://github.com/esalling23/video-database-hippa.git master;",
+      "post-deploy" : "npm i ; cd /srv/framework/current/ ; npm i ; grunt compile --sites=video-database-hippa --env staging ; pm2 restart 0 -- video-database-hippa --env staging"
     },
 
     "framework-production" : {
       "user": "node",
       "host": "xxx.xxx.xxx.xx",
-      "repo": "git@github.com:engagementgamelab/repo-name.git",
+      "repo": "https://github.com/esalling23/hipaa-video-database.git",
       "ref": "origin/master",
       "path": "/srv/framework",
       "pre-deploy-local" : "echo 'Cloning and running npm install. Be patient.'",
-      "post-deploy" : "npm install ; grunt compile --sites=repo-name --env production ; pm2 restart 0 -- repo-name --env production",
+      "post-deploy" : "npm install ; grunt compile --sites=video-database-hippa --env production ; pm2 restart 0 -- video-database-hippa --env production",
       "env": {
         "NODE_ENV": "production"
       }
@@ -50,11 +50,11 @@
     "production" : {
       "user": "node",
       "host": "xxx.xxx.xxx.xx",
-      "repo": "git@github.com:engagementgamelab/repo-name.git",
+      "repo": "git@github.com:engagementgamelab/video-database-hippa.git",
       "ref": "origin/production",
-      "path": "/srv/repo-name",
-      "pre-deploy-local" : "echo 'NPM linking repo-name and restarting app.';",
-      "post-deploy" : "npm i ; cd /srv/framework/current/ ; grunt compile --sites=repo-name --env production ; NODE_ENV=production pm2 restart server.js -- repo-name --env production"
+      "path": "/srv/video-database-hippa",
+      "pre-deploy-local" : "echo 'NPM linking video-database-hippa and restarting app.';",
+      "post-deploy" : "npm i ; cd /srv/framework/current/ ; grunt compile --sites=video-database-hippa --env production ; NODE_ENV=production pm2 restart server.js -- video-database-hippa --env production"
     }
 
   }

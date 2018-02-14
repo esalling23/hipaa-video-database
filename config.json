@@ -1,7 +1,6 @@
 {
 	"name": "Hippa Video Database",
 	"database": "starter-keystone4",
-	"subdomain": "starter-keystone4",
 	"admin_nav": {
 		"Client Upload and Response Group Data": ["ClientResponseGroup"],
 		"Response and Analysis Individual Data": ["ResearcherResponse", "Timestamp", "ClientResponse"],
