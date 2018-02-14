@@ -9,6 +9,6 @@
 
 exports.create = {
 	User: [
-	  { name: 'Dev',, email: 'user@admin.edu', password: 'password', isAdmin: true }
+	  { name: 'Dev', email: 'user@admin.edu', password: 'password', isAdmin: true }
 	]
 };
