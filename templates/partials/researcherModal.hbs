@@ -5,9 +5,9 @@
   controls controlsList="nodownload nofullscreen"
   src="{{group.url}}"></video>
 
-  {{#if group.timestamps}}
+  {{#if group.markers}}
   <div class="timestamp-group">
-    {{#each group.timestamps}}
+    {{#each group.markers}}
     <button class="timestamp" data-time="{{this.time}}">{{this.time}}: {{this.notes}}</button>
     {{/each}}
   </div>
@@ -16,7 +16,7 @@
   <form id="timestamp-form">
     Current time: <span id="current-timestamp"></span>
     <input type="text" class="form-control" placeholder="Notes">
-    <button type="button" class="btn btn-primary" id="add-timestamp">Add Timestamp</button>
+    <button type="button" class="btn btn-primary" id="add-timestamp">Add Video Marker</button>
   </form>
 
   <form id="research-form">

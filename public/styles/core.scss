@@ -63,7 +63,7 @@ video {
 	text-align: center;
 	padding: 5%;
 	overflow: scroll;
-	
+
 	video {
 		display: block;
 		margin: 0 auto;
@@ -99,6 +99,35 @@ video {
 			margin: 4px;
 		}
 	}
+}
+
+.video-item {
+	padding: 8px;
+	margin: 8px;
+	border: 1px solid black;
+	width: 40%;
+	display: inline-block;
+
+	@media(max-width: 400px) {
+		width: 100%;
+
+	}
+}
+
+.filters {
+	margin-left: 25px;
+}
+
+.sorting {
+
+	ul {
+		list-style-type: none;
+	}
+
+		li {
+			display: inline-block;
+		}
+
 }
 
 .home {

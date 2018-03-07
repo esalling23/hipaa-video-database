@@ -1,7 +1,7 @@
 /**
  * (Site name here)
  *
- * Timestamps page Model
+ * Video Marker page Model
  * @module index
  * @class index
  * @author Johnny Richardson
@@ -19,19 +19,19 @@ var Types = keystone.Field.Types;
  * @constructor
  * See: http://keystonejs.com/docs/database/#lists-options
  */
-var Timestamp = new keystone.List('Timestamp',
+var VideoMarker = new keystone.List('VideoMarker',
 	{
-		label: 'Timestamps',
-		singular: 'Timestamp',
+		label: 'Video Markers',
+		singular: 'Video Marker',
 		nodelete: false,
 		track: true
 	});
 
 /**
  * Model Fields
- * @main Timestamps
+ * @main Video Marker
  */
-Timestamp.add({
+VideoMarker.add({
 
 	name: { type: String, default: 'Response', required: true, initial: true },
 	time: { type: String, label: 'Time' },
@@ -47,6 +47,6 @@ Timestamp.add({
 /**
  * Model Registration
  */
-Timestamp.defaultSort = '-createdAt';
-Timestamp.defaultColumns = 'name, updatedAt';
-Timestamp.register();
+VideoMarker.defaultSort = '-createdAt';
+VideoMarker.defaultColumns = 'name, updatedAt';
+VideoMarker.register();

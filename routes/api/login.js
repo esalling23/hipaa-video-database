@@ -7,38 +7,61 @@ var keystone = require('keystone'),
 // Signup
 exports.create = function(req, res) {
 
-	console.log(req.body);
+	// console.log(req.body);
 
-	var newUser = new User.model({
-		name: req.body.username,
-		email: req.body.email,
-		password: req.body.password
-	});
+	User.model.find().exec(function(err, result) {
+		var id = result.length;
 
-	newUser.save(function(err, result) {
-		console.log(result);
-		var data = {
-			user: result,
-			url: '/client/' + result.id
-		}
-		res.send(data)
-	});
+		var newUser = new User.model({
+			name: req.body.username,
+			email: req.body.email,
+			password: req.body.password
+		});
+
+		if (req.body.isResearcher)
+			newUser.isResearcher = true;
+		else
+			newUser.clientId = 'client_' + id;
+
+		newUser.save(function(err, result) {
+			console.log(result);
+			var data = {
+				user: result,
+				url: '/client/' + result.id
+			}
+			res.send(data)
+		});
+	})
+
+
 
 }
 
 // Login
 exports.get = function(req, res) {
 
-	console.log(req.body);
+	// console.log(req.body);
+	var body = req.body.data ? JSON.parse(req.body.data) : req.body;
 
-	var query = User.model.findOne({ email: req.body.email });
+	var query = User.model.find();
 
-	query.exec((err, user) => {
+	// console.log(body.email);
+
+	query.exec((err, list) => {
+
+
+		var user = _.findWhere(list, { email: body.email });
+
+		// console.log(user.password);
 
 	    if (err || !user) return res.json({ error_code: "no_profile", msg: "No profile for that email" });
+			// var password = body.password.toString();
 
-	    user._.password.compare(req.body.password, (err, result) => {
+			// console.log(typeof body.password, typeof user.password); // returns 'string', 'string'
+			// console.log(body.password == user.password); // returns true
 
+	    user._.password.compare(body.password, (err, result) => {
+				// console.log(err, result);
 			if (result) {
 
 					var data = {
@@ -50,7 +73,12 @@ exports.get = function(req, res) {
 					else
 						data.url = '/client/' + user.id;
 
-					res.send(data);
+					if (!user.clientId && !user.isAdmin && !user.isResearcher)
+						user.clientId = 'client_' + list.length;
+
+					user.save(function(err, result) {
+						res.send(data);
+					});
 
 			} else {
 

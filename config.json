@@ -3,7 +3,7 @@
 	"database": "starter-keystone4",
 	"admin_nav": {
 		"Client Upload and Response Group Data": ["ClientResponseGroup"],
-		"Response and Analysis Individual Data": ["ResearcherResponse", "Timestamp", "ClientResponse"],
+		"Response and Analysis Individual Data": ["ResearcherResponse", "VideoMarker", "ClientResponse"],
 		"Survey Questions": ["Question", "ClientQuestions", "ResearchQuestions"]
 
 								}

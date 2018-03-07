@@ -17,7 +17,7 @@ exports.researchModal = function(req, res) {
 	console.log(req.body);
 
 	var groupQuery = ClientResponseGroup.model.findOne({ _id: req.body.group })
-										.populate('client timestamps researcherData responses');
+										.populate('client markers researcherData responses');
 
 	groupQuery.exec(function(err, result) {
 		data.group = result;

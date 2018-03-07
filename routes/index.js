@@ -51,7 +51,7 @@ router.get('/client/:id', routes.views.client);
 router.post('/api/load/researchModal', keystone.middleware.api, routes.api.load.researchModal);
 
 router.post('/api/research', keystone.middleware.api, routes.api.save.research);
-router.post('/api/saveTimestamp', keystone.middleware.api, routes.api.save.timestamp);
+router.post('/api/saveTimestamp', keystone.middleware.api, routes.api.save.marker);
 
 router.post('/api/saveResponses', keystone.middleware.api, routes.api.save.responses);
 router.post('/api/upload', keystone.middleware.api, routes.api.save.upload);

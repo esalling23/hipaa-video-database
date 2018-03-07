@@ -1,7 +1,7 @@
 /**
  * (Site name here)
  *
- * ClientResponseGroup page Model
+ * AnalysisResponseGroup page Model
  * @module index
  * @class index
  * @author Johnny Richardson
@@ -19,19 +19,19 @@ var Types = keystone.Field.Types;
  * @constructor
  * See: http://keystonejs.com/docs/database/#lists-options
  */
-var ClientResponseGroup = new keystone.List('ClientResponseGroup',
+var AnalysisResponseGroup = new keystone.List('AnalysisResponseGroup',
 	{
-		label: 'Client Data Groups',
-		singular: 'Client Data Group',
+		label: 'Analysis Data Groups',
+		singular: 'Analysis Data Group',
 		nodelete: false,
-		track: {updatedAt: true, createdAt: true}
+		track: { updatedAt: true, createdAt: true }
 	});
 
 /**
  * Model Fields
- * @main ClientResponseGroup
+ * @main AnalysisResponseGroup
  */
-ClientResponseGroup.add({
+AnalysisResponseGroup.add({
 
 	name: { type: String, default: 'Response', required: true, initial: true},
 	responses: {
@@ -39,9 +39,8 @@ ClientResponseGroup.add({
 		ref: 'ClientResponse',
 		many: true
 	},
-	url: { type: String, label: 'User Upload' },
 	client: {
-		type: Types.Relationship,
+		type: String,
 		ref: 'User',
 		many: false,
 		label: 'Client Who Uploaded Item'
@@ -65,6 +64,6 @@ ClientResponseGroup.add({
 /**
  * Model Registration
  */
-ClientResponseGroup.defaultSort = '-createdAt';
-ClientResponseGroup.defaultColumns = 'name, updatedAt, createdAt';
-ClientResponseGroup.register();
+AnalysisResponseGroup.defaultSort = '-createdAt';
+AnalysisResponseGroup.defaultColumns = 'name, updatedAt, createdAt';
+AnalysisResponseGroup.register();

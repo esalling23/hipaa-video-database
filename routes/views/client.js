@@ -13,13 +13,14 @@
  */
 var keystone = require('keystone'),
     ClientQuestions = keystone.list('ClientQuestions'),
+    Client = keystone.list("User"),
     _ = require('underscore');
 
 exports = module.exports = function(req, res) {
 
     var view = new keystone.View(req, res),
         locals = res.locals;
-
+        console.log(req.params);
     // Init locals
     locals.section = 'client';
 
@@ -36,7 +37,14 @@ exports = module.exports = function(req, res) {
 
             locals.questionaire = result;
 
-            next();
+            Client.model.findOne({ _id: req.params.id }).exec(function(err, user) {
+
+              console.log(err, user);
+
+              locals.user = user;
+              next();
+
+            });
 
         });
 

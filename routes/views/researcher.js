@@ -14,6 +14,7 @@
 var keystone = require('keystone'),
     ResearcherQuestions = keystone.list('ResearchQuestions'),
     Responses = keystone.list('ClientResponseGroup'),
+    Filter = keystone.list("Filter"),
     _ = require('underscore');
 
 exports = module.exports = function(req, res) {
@@ -32,7 +33,11 @@ exports = module.exports = function(req, res) {
             }
         }).populate('questions');
 
-        var queryUploads = Responses.model.find({}).populate('questions timestamps client researcherData');
+        var queryUploads = Responses.model.find({}, {}, {
+            sort: {
+                'createdAt': -1
+            }
+        }).populate('questions markers client researcherData');
 
         queryResearcherQ.exec(function(err, result) {
             if (err) throw err;
@@ -41,7 +46,12 @@ exports = module.exports = function(req, res) {
 
             queryUploads.exec(function(err, uploads) {
               locals.uploads = uploads;
-              next();
+
+              Filter.model.find({}).exec(function(err, filters){
+                locals.filters = filters;
+                next();
+
+              });
 
             });
 

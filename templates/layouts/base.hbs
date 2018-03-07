@@ -32,12 +32,14 @@
 		{{!-- {{> nav}} --}}
 		{{#ifeq section 'client'}}
 		<div id="upload-modal" class="modal" style="display:none">
+			<span class="glyphicon glyphicon-remove">
 			{{>uploadModal}}
 		</div>
 		{{/ifeq}}
 
 		{{#ifeq section 'researcher'}}
 		<div id="researcher-modal" class="modal" style="display:none">
+			<span class="glyphicon glyphicon-remove">
 			{{>researcherModal}}
 		</div>
 		{{/ifeq}}

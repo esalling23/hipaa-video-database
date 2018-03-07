@@ -19,9 +19,10 @@
 
 		if (localStorage.user) {
 			console.log(JSON.stringify(localStorage.user));
-			// $.post('/api/login', localStorage.user, function(res) {
-			// 	window.location = res.url;
-			// });
+			$.post('/api/login', { data: localStorage.user }, function(res) {
+				console.log(res);
+				// window.location = res.url;
+			});
 		}
 
 		var login = true;
@@ -70,7 +71,9 @@
 			};
 			$.post('/api/login', data, function(res) {
 				console.log(res);
-				localStorage.user = JSON.stringify(res.user);
+				if ($('#loginForm #rememberMe')[0].checked)
+					localStorage.user = JSON.stringify(res.user);
+
 				console.log(res.user);
 				window.location = res.url;
 			});
@@ -80,13 +83,11 @@
 
 		{{#ifeq section 'client'}}
 
-		$('body #uploadVideo').on('click touchstart tap', function(e) {
+		$('body #videoCapture').on('change', function(e) {
 			console.log(e);
 			saveVideo();
 
 		});
-
-
 
 		function saveVideo() {
 
@@ -100,7 +101,7 @@
 				var recordedResult = reader.result;
 				var data = {
 					url: recordedResult,
-					user: localStorage.user
+					user: "{{user.id}}"
 				};
 
 				$.post("/api/upload/", { data:data },
@@ -160,6 +161,83 @@
 	{{/ifeq}}
 
 	{{#ifeq section 'researcher'}}
+
+	var container = ".video-grid";
+	var filterElem = ".video-item";
+	var filterCount = 0;
+	var filters = {};
+
+	$(container).isotope({
+	  itemSelector: filterElem,
+	  layoutMode: 'masonry',
+		columnWidth: "50%",
+		filter: '*'
+	});
+
+	var $grid = $(container).isotope({
+	  getSortData: {
+	    clientId: function(e) {
+				return parseInt($(e).data('client-id'))
+			},
+	    dateUpdated: function(e) {
+				var int = Date.parse($(e).data('date-updated'));
+				console.log(int)
+				return  int
+			},
+	    dateCreated: function(e) {
+				console.log( Date.parse($(e).data('date-created')))
+				var int =  Date.parse($(e).data('date-created'));
+				return int
+			}
+	  }
+	});
+
+	$grid.isotope({
+		sortBy: 'dateUpdated',
+		sortAscending: true
+	})
+
+	$('#filter-dropdown li').delegate('a','click', function(e) {
+
+		$(this).toggleClass('is-checked');
+
+		_.each($(filterElem), function(item) {
+			var type = $(item).data($(e.target).attr("id"));
+			type = type.replace(/ /g, "-");
+			$(item).addClass(type);
+		});
+
+		$(container).isotope({
+			itemSelector: filterElem,
+			filter: $(e.target).data("filter")
+		});
+
+	});
+
+	$('#sorting-group li').delegate('a','click', function(e) {
+
+		var currentlySorting = $(this).hasClass('sorted-by');
+
+		if (!currentlySorting) {
+			$('#sorting-group a').removeClass('sorted-by');
+
+			$('#sorting-group li').find('span').hide();
+			$(this).addClass('sorted-by');
+			$(this).find('span').addClass('glyphicon-chevron-down');
+			$(this).find('span').show();
+		} else {
+			$(this).find('span').toggleClass('glyphicon-chevron-down');
+			$(this).find('span').toggleClass('glyphicon-chevron-up');
+		}
+
+
+		var sortByValue = $(this).attr('data-sort-by');
+	  $grid.isotope({
+			sortBy: sortByValue,
+		  sortAscending: $(this).find('span').hasClass('glyphicon-chevron-down')
+	 });
+
+	});
 
 	$('.video-item').on('click', function(e) {
 		$.post("/api/load/researchModal", { group: $(this).data("group") },

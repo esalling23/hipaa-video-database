@@ -4,15 +4,15 @@ var keystone = require('keystone');
 var Questions = keystone.list('Question');
 var Response = keystone.list('ClientResponse');
 var Group = keystone.list('ClientResponseGroup');
-var Timestamp = keystone.list('Timestamp');
+var Marker = keystone.list('VideoMarker');
 var TemplateLoader = require('../../lib/TemplateLoader');
 
 exports.responses = function(req, res) {
     var currentGroup = req.body.group;
-    console.log(currentGroup, "is the current Group")
+    // console.log(currentGroup, "is the current Group")
 
    Group.model.findOne({ _id: currentGroup }, function(err, group) {
-     console.log(group, "is the group we found")
+     // console.log(group, "is the group we found")
 
       console.log(req.body.responses);
 
@@ -47,17 +47,17 @@ exports.upload = function(req, res) {
     api_key: '723551514692962',
     api_secret: 'syiIllz2Vf6VglCJWRDZFsNafD8'
   });
-  console.log(req.body.data.user, "is the user that just uploaded that video");
-  var user = JSON.parse(req.body.data.user);
-  console.log(user);
-  console.log(user._id);
+  // console.log(req.body.data.user, "is the user that just uploaded that video");
+  // var user = JSON.parse(req.body.data.user);
+  // console.log(user);
+  // console.log(user._id);
   cloudinary.v2.uploader.unsigned_upload(req.body.data.url, "video-database", { resource_type: "video" },
     function(error, result) {
       console.log(error, result);
 
         var newUpload = new Group.model({
             url: result.url,
-            client: user._id
+            client: req.body.data.user
         });
 
         console.log(newUpload, 'is the new upload')
@@ -71,12 +71,12 @@ exports.upload = function(req, res) {
   });
 }
 
-exports.timestamp = function(req, res) {
+exports.marker = function(req, res) {
 
   Group.model.findOne({ _id: req.body.id }, function(err, group) {
      console.log(group, "is the group we found")
 
-     var thisTimestamp = new Timestamp.model({
+     var thisTimestamp = new Marker.model({
        time: req.body.time,
        researcher: req.body.researcher,
        notes: req.body.note
@@ -105,13 +105,13 @@ exports.timestamp = function(req, res) {
 exports.research = function(req, res) {
 
    Group.model.findOne({ _id: req.body.group }, function(err, group) {
-       console.log(group, "is the group we found")
+       // console.log(group, "is the group we found")
 
-       console.log(req.body.responses);
+       // console.log(req.body.responses);
 
        _.each(req.body.responses, function(value, key) {
 
-         console.log(value, key);
+         // console.log(value, key);
 
          newResponseGroup = new ResearcherResponse.model({
            question: key,

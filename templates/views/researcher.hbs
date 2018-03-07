@@ -16,11 +16,49 @@
 
 		<h3>Click on a video to start analyzing</h3>
 
+		<div class="row filters">
+			<div class="btn-group clearfix">
+				<button id="button-group-filters" class="filter-options btn btn-default dropdown-toggle" type="button" data-filter-group="{{combine @key}}" data-toggle="dropdown">
+					<div class="button-text">Filter <span class="bigCaret"></span></div>
+				</button>
+
+				<ul class="dropdown-menu scrollable" id="filter-dropdown" role="menu">
+					<li><a id="filters-all" data-filter="" href="#" data-filter-value="" class="all-options"</a></li>
+					{{#each filters}}
+					<li><a id="{{key}}" value="#" href="#" data-filter-value=".{{key}}" class="option">{{name}}</a></li>
+					{{/each}}
+				</ul>
+
+			</div>
+
+			<div class="btn-group clearfix">
+				<button class="filter-options clear-all btn btn-default" type="button" data-filter-value="">Clear Filters</button>
+			</div>
+		</div>
+
+		<div class="row sorting">
+			<div class="btn-group clearfix">
+				<ul id="sorting-group" role="menu">
+						{{#each filters}}
+						<li><a value="#" href="#" data-sort-by="{{camelCase key}}" class="sorting-option btn btn-default">{{name}} <span class="glyphicon"></span></a></li>
+						{{/each}}
+				</ul>
+			</div>
+		</div>
+
+		<div class="video-grid">
 		{{#each uploads}}
-			<div class="video-item" data-group="{{this.id}}">
-				{{this.client.name}}
+			<div class="video-item"
+					data-client-id="{{this.client.clientId}}"
+					data-date-created="{{dateFormat this.createdAt}}"
+					data-date-updated="{{dateFormat this.updatedAt}}"
+					data-group="{{this.id}}">
+				Client: {{this.client.clientId}} <br>
+				Date Uploaded: {{this.createdAt}} <br>
+				Date Updated: {{this.updatedAt}}
 			</div>
 		{{/each}}
+		</div>
 
 	</div>
 
