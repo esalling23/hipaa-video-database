@@ -1,17 +1,19 @@
 <div class="row modal-inner research">
 
+  <div id="research-close" class="btn btn-primary">X</div>
+
   <video id="uploaded"
   oncontextmenu="return false;"
   controls controlsList="nodownload nofullscreen"
   src="{{group.url}}"></video>
 
-  {{#if group.markers}}
   <div class="timestamp-group">
+    {{#if group.markers}}
     {{#each group.markers}}
     <button class="timestamp" data-time="{{this.time}}">{{this.time}}: {{this.notes}}</button>
     {{/each}}
+    {{/if}}
   </div>
-  {{/if}}
 
   <form id="timestamp-form">
     Current time: <span id="current-timestamp"></span>

@@ -250,8 +250,10 @@
 
 	var researchContextSetup = function(group) {
 
-		var href = location.href;
-		href = href.split("/")[href.split("/").length - 1];
+
+			$('body #research-close').on('click', function(e) {
+				$('#researcher-modal').fadeOut();
+			});
 
 			$('body #uploaded').on('timeupdate', function(ev) {
 				var time = $('#uploaded')["0"].currentTime;
@@ -265,7 +267,7 @@
 					id: group,
 					time: $('#uploaded')["0"].currentTime,
 					note: $('#timestamp-form input').val(),
-					researcher: href
+					researcher: "{{user.id}}"
 				};
 
 				console.log(data);
@@ -273,8 +275,16 @@
 				$.post("/api/saveTimestamp/", data,
 					function( log ) {
 						console.log(log);
+
+						if (log.msg == "success") {
+							var time = log.timestamp.time;
+							var notes = log.timestamp.notes;
+							$('.timestamp-group').append('<button class="timestamp" data-time="' + time + '">' + time + ": " + notes + '</button>')
+						}
+
 				});
 			});
+
 
 			$('body .timestamp').on('click tap touchstart', function(e) {
 				$('#uploaded')["0"].currentTime = $(this).data("time");
@@ -304,15 +314,15 @@
 				var data = {
 					group: group,
 					responses: values,
-					researcher: href
+					researcher: "{{user.id}}"
 				}
 				$.post("/api/research/", data,
 					function( log ) {
 						console.log(log);
 
-						$('#loading').fadeOut(function() {
-							$('#research-modal').fadeOut();
-						});
+						// $('#loading').fadeOut(function() {
+							$('#researcher-modal').fadeOut();
+						// });
 				});
 			});
 	}

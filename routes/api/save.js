@@ -89,9 +89,9 @@ exports.marker = function(req, res) {
 
         console.log(timestamp._id);
 
-        group.timestamps.push(timestamp._id);
+        group.markers.push(timestamp._id);
 
-        console.log(group.timestamps);
+        console.log(group.markers);
 
         group.save(function(err, updatedGroup) {
           res.send({ msg: 'success', group: updatedGroup, timestamp: timestamp });
@@ -105,9 +105,9 @@ exports.marker = function(req, res) {
 exports.research = function(req, res) {
 
    Group.model.findOne({ _id: req.body.group }, function(err, group) {
-       // console.log(group, "is the group we found")
+       console.log(group, "is the group we found")
 
-       // console.log(req.body.responses);
+       console.log(req.body);
 
        _.each(req.body.responses, function(value, key) {
 
@@ -119,7 +119,10 @@ exports.research = function(req, res) {
            researcher: req.body.researcher
          });
 
+         console.log(newResponseGroup);
+
          newResponseGroup.save(function(err, post) {
+           console.log(post);
            group.researcherData.push(post);
 
            group.save(function(err, updatedGroup) {

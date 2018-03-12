@@ -14,6 +14,7 @@
 var keystone = require('keystone'),
     ResearcherQuestions = keystone.list('ResearchQuestions'),
     Responses = keystone.list('ClientResponseGroup'),
+    Researcher = keystone.list('User'),
     Filter = keystone.list("Filter"),
     _ = require('underscore');
 
@@ -49,7 +50,15 @@ exports = module.exports = function(req, res) {
 
               Filter.model.find({}).exec(function(err, filters){
                 locals.filters = filters;
-                next();
+
+                Researcher.model.findOne({ _id: req.params.id }).exec(function(err, user) {
+
+                  console.log(err, user);
+
+                  locals.user = user;
+                  next();
+
+                });
 
               });
 
