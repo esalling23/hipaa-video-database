@@ -11,11 +11,15 @@
 	visibility: hidden;
 }
 
+html {
+	overflow: scroll;
+}
 // Body
 .body {
   background-color: white;
   color: black;
   font-family: "HalisLight";
+	overflow: scroll;
 }
 
 .desktop-only {
