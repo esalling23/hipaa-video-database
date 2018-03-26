@@ -40,7 +40,9 @@ VideoMarker.add({
 		type: Types.Relationship,
 		ref: 'User',
 		many:false
-	}
+	},
+	category: { type: String, label: 'Category' },
+	action: { type: String, label: 'Action' }
 
 });
 

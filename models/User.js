@@ -16,8 +16,9 @@ User.add({
 	password: { type: Types.Password, initial: true, required: true },
 	clientId: { type: String }
 }, 'Permissions', {
-	isAdmin: { type: Boolean, label: 'Is an admin', index: true },
-	isResearcher: { type: Boolean, label: 'Is a researcher', index: true }
+	isAdmin: { type: Boolean, label: 'Is an admin', index: true, note: 'This gives acces to Keystone CMS' },
+	isResearcher: { type: Boolean, label: 'Is a researcher', index: true },
+	accessLvl: { type: Types.Select, options: 'Assistant, Analyzer, Admin' }
 });
 
 // Provide access to Keystone
@@ -31,27 +32,21 @@ User.schema.pre('save', function(next) {
 	console.log(this);
 	var that = this;
 
-		if (!this.clientId && !this.isResearcher) {
-			console.log("setting")
+	if (that.isResearcher && that.accessLvl == 'Admin')
+		that.isAdmin = true;
 
-			User.model.find().exec(function(err, result) {
-				var id = result.length;
+	if (!this.clientId && !this.isResearcher) {
 
-				console.log(id);
+		User.model.find().exec(function(err, result) {
+			var id = result.length;
+			that.clientId = 'client_' + id;
 
+			next();
 
+		});
 
-				that.clientId = 'client_' + id;
-
-				console.log(that.clientId);
-				console.log(that);
-
-				next();
-
-			});
-
-		} else
-	    next();
+	} else
+    next();
 
 });
 

@@ -1,0 +1,27 @@
+{{#each questions}}
+	{{#ifeq this.type "Text"}}
+	<p id="{{this.id}}" class="question">{{this.question}}<br>
+		<input name="{{this.question}}" label="{{this.question}}" type="text"></p>
+	{{/ifeq}}
+
+
+	{{#ifeq this.type "Bubble Select"}}
+		<div class="radio-group question" id="{{this.id}}">
+		{{#each this.options}}
+			<div class="radio-wrapper"><input type="radio" name="{{this}}" value="{{this}}"> {{this}}</div>
+		{{/each}}
+	</div>
+	{{/ifeq}}
+
+	{{#ifeq this.type "Dropdown"}}
+		<select id="{{this.id}}" class="question">
+			<option value="Select">Select Below</option>
+			{{#each this.options}}
+				<option value="{{this}}">{{this}}</option>
+			{{/each}}
+		</select>
+	{{/ifeq}}
+
+{{/each}}
+
+<button type="button" id="research-send">Submit</button>

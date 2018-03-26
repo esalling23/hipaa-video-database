@@ -12,9 +12,13 @@
 
 
 <div class="container-fluid home">
+	{{#ifeq user.accessLvl 'Admin'}}
+		<button id="onboard">New Client Onboarding</button>
+		{{> signup}}
+	{{/ifeq}}
 	<div class="row">
 
-		<h3>Click on a video to start analyzing</h3>
+		<h3>Analyze by clicking on an item below:</h3>
 
 		<div class="row filters">
 			<div class="btn-group clearfix">

@@ -58,6 +58,12 @@ video {
 	max-width: 100%;
 }
 
+.box {
+	border: 2px solid black;
+	padding: 10px;
+	margin-bottom: 20px;
+}
+
 .modal {
 	position: absolute;
 	height: 100%;
@@ -66,6 +72,7 @@ video {
 	background: white;
 	text-align: center;
 	padding: 5%;
+	padding-top: 2%;
 	overflow: scroll;
 
 	video {
@@ -76,10 +83,30 @@ video {
 
 	&.upload {
 		max-height: 150px;
+
+		video {
+			height: 100px;
+			float: left;
+		}
 	}
 
-	&.research {
 
+
+	&#researcher-modal {
+		* {
+			text-align: left;
+		}
+		video, #client-info, #timestamp-form {
+			width: 80%;
+			margin: 0px auto;
+			margin-bottom: 20px;
+		}
+
+		#research-close {
+			position: absolute;
+			top: 40px;
+			right: 20px;
+		}
 	}
 
 	form {

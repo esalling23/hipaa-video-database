@@ -10,6 +10,16 @@ module.exports = function() {
      * ===================
      */
 
+     _helpers.ifeqor = function(a, b, c, options) {
+       console.log(a, b);
+       console.log(a, c)
+        if (a == b || a == c) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+     }
+
      _helpers.combine = function(str) {
 
         if(str === undefined)

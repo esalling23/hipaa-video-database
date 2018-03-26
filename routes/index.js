@@ -49,6 +49,8 @@ router.get('/researcher/:id', routes.views.researcher);
 router.get('/client/:id', routes.views.client);
 
 router.post('/api/load/researchModal', keystone.middleware.api, routes.api.load.researchModal);
+router.post('/api/load/form', keystone.middleware.api, routes.api.load.form);
+router.post('/api/load/marker/actions', keystone.middleware.api, routes.api.load.markerActions);
 
 router.post('/api/research', keystone.middleware.api, routes.api.save.research);
 router.post('/api/saveTimestamp', keystone.middleware.api, routes.api.save.marker);

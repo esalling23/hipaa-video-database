@@ -1,54 +1,61 @@
 <div class="row modal-inner research">
-
   <div id="research-close" class="btn btn-primary">X</div>
 
-  <video id="uploaded"
-  oncontextmenu="return false;"
-  controls controlsList="nodownload nofullscreen"
-  src="{{group.url}}"></video>
+  <div class="col-md-4">
 
-  <div class="timestamp-group">
-    {{#if group.markers}}
-    {{#each group.markers}}
-    <button class="timestamp" data-time="{{this.time}}">{{this.time}}: {{this.notes}}</button>
-    {{/each}}
-    {{/if}}
+    <div id="client-info" class="box">
+      <h4>Client Id: {{group.client.clientId}}</h4>
+      <h5>Date Uploaded: {{group.createdAt}}</h5>
+    </div>
+
+    <video id="uploaded"
+    oncontextmenu="return false;"
+    controls controlsList="nodownload nofullscreen"
+    src="{{group.url}}"></video>
+
+    <form id="timestamp-form">
+      Current time: <span id="current-timestamp"></span>
+      <input type="text" class="form-control" placeholder="Notes">
+      <select class="timestamp-category-dropdown">
+        <option>Select a marker category</option>
+        {{#each markerCategories}}
+        <option class="timestamp" data-id="{{this._id}}" data-key="{{this.key}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+      <select class="timestamp-action-dropdown" id="timestamp-actions" style="display:none">
+
+      </select>
+      <button type="button" class="btn btn-primary" id="add-timestamp">Add Video Marker</button>
+    </form>
+
   </div>
 
-  <form id="timestamp-form">
-    Current time: <span id="current-timestamp"></span>
-    <input type="text" class="form-control" placeholder="Notes">
-    <button type="button" class="btn btn-primary" id="add-timestamp">Add Video Marker</button>
-  </form>
+  <div class="col-md-8">
 
-  <form id="research-form">
-    {{#each questions}}
-      {{#ifeq this.type "Text"}}
-      <p id="{{this.id}}" class="question">{{this.question}}<br>
-        <input name="{{this.question}}" label="{{this.question}}" type="text"></p>
-      {{/ifeq}}
+    <div class="client-responses box">
+      {{#each group.responses}}
+        <h4>Question {{@index}}: {{this.answer}}</h4>
+      {{/each}}
+    </div>
 
-
-      {{#ifeq this.type "Bubble Select"}}
-        <div class="radio-group question" id="{{this.id}}">
-        {{#each this.options}}
-          <div class="radio-wrapper"><input type="radio" name="{{this}}" value="{{this}}"> {{this}}</div>
+    <div class="box">
+      {{#ifeqor user.accessLvl "Admin" "Analyzer"}}
+      <!-- Marker Dropdown -->
+      <select class="timestamp-dropdown">
+        <option>{{#if group.markers}}Select a timestamp{{else}}No timestamps have been added. Add one to start analysis.{{/if}}</option>
+        {{#each group.markers}}
+        <option class="timestamp" data-time="{{this.time}}" data-id="{{this._id}}">{{this.time}}: {{this.notes}}</option>
         {{/each}}
-      </div>
-      {{/ifeq}}
+      </select>
 
-      {{#ifeq this.type "Dropdown"}}
-        <select id="{{this.id}}" class="question">
-          <option value="Select">Select Below</option>
-          {{#each this.options}}
-            <option value="{{this}}">{{this}}</option>
-          {{/each}}
-        </select>
-      {{/ifeq}}
+      <form id="research-form" data-group="{{group.id}}" data-response="">
 
-    {{/each}}
+      </form>
 
-    <button type="button" id="research-send">Submit</button>
-  </form>
+      {{else}}
+        <h3>You do not have access to analysis. Check your access level or reach out to a research admin for access.</h3>
+      {{/ifeqor}}
+    </div>
+  </div>
 
 </div>

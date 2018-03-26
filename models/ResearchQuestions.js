@@ -23,7 +23,7 @@ var ResearchQuestions = new keystone.List('ResearchQuestions',
 	{
 		label: 'Research Questions',
 		singular: 'Research Questions',
-		nodelete: false, 
+		nodelete: false,
 		track: true
 	});
 
@@ -42,6 +42,35 @@ ResearchQuestions.add({
  }
 
 });
+
+ResearchQuestions.schema.statics.removeResourceRef = function(resourceId, callback) {
+
+    ResearchQuestions.model.update({
+            $or: [{
+                'question': resourceId
+            }]
+        },
+
+        {
+            $pull: {
+							'question': resourceId
+            }
+        },
+
+        {
+            multi: true
+        },
+
+        function(err, result) {
+
+            callback(err, result);
+
+            if (err)
+                console.error(err);
+        }
+    );
+
+};
 
 /**
  * Model Registration

@@ -46,7 +46,9 @@ ResearcherResponse.add({
 		type: Types.Relationship,
 		ref: 'User',
 		many: false
-	}
+	},
+	marker: { type: String, hidden: false },
+	group: { type: String, hidden: false }
 
 });
 

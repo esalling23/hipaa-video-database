@@ -47,6 +47,7 @@ exports = module.exports = function(req, res) {
 
             queryUploads.exec(function(err, uploads) {
               locals.uploads = uploads;
+              console.log(uploads);
 
               Filter.model.find({}).exec(function(err, filters){
                 locals.filters = filters;

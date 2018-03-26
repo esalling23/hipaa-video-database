@@ -40,15 +40,14 @@ exports.create = function(req, res) {
 // Login
 exports.get = function(req, res) {
 
-	// console.log(req.body);
-	var body = req.body.data ? JSON.parse(req.body.data) : req.body;
+	console.log(req.body.data);
+	var body = req.body.data ? req.body.data : req.body;
 
 	var query = User.model.find();
 
-	// console.log(body.email);
+	console.log(body);
 
 	query.exec((err, list) => {
-
 
 		var user = _.findWhere(list, { email: body.email });
 
@@ -57,8 +56,8 @@ exports.get = function(req, res) {
 	    if (err || !user) return res.json({ error_code: "no_profile", msg: "No profile for that email" });
 			// var password = body.password.toString();
 
-			// console.log(typeof body.password, typeof user.password); // returns 'string', 'string'
-			// console.log(body.password == user.password); // returns true
+			console.log(typeof body.password, typeof user.password); // returns 'string', 'string'
+			console.log(body.password == user.password); // returns true
 
 	    user._.password.compare(body.password, (err, result) => {
 				// console.log(err, result);

@@ -18,10 +18,14 @@
 		{{#ifeq section 'index'}}
 
 		if (localStorage.user) {
-			console.log(JSON.stringify(localStorage.user));
-			$.post('/api/login', { data: localStorage.user }, function(res) {
+			console.log(localStorage.user);
+			var data = {
+				password: localStorage.password,
+				email: localStorage.email
+			}
+			$.post('/api/login', { data: data }, function(res) {
 				console.log(res);
-				// window.location = res.url;
+				window.location = res.url;
 			});
 		}
 
@@ -51,31 +55,24 @@
 			login = !login;
 		});
 
-		$('body #signup').on('click tap touchstart', function(e) {
-			var data = {
-				email: $('#signupForm input[name="email"]').val(),
-				password: $('#signupForm input[name="password"]').val(),
-				username: $('#signupForm input[name="username"]').val()
-			};
-			$.post('/api/signup', data, function(res) {
-				localStorage.user = JSON.stringify(res.user);
-				console.log(res.user);
-				window.location = res.url;
-			});
-		});
 
 		$('body #login').on('click tap touchstart', function(e) {
 			var data = {
 				email: $('#loginForm input[name="email"]').val(),
 				password: $('#loginForm input[name="password"]').val()
 			};
+			console.log(data);
 			$.post('/api/login', data, function(res) {
-				console.log(res);
-				if ($('#loginForm #rememberMe')[0].checked)
-					localStorage.user = JSON.stringify(res.user);
+				// console.log(res);
+				if ($('#loginForm #rememberMe')[0].checked){
+					console.log(data);
+					localStorage.password = $('#loginForm input[name="password"]').val();
+					localStorage.email = $('#loginForm input[name="email"]').val();
+					console.log(localStorage)
+				}
 
-				console.log(res.user);
-				window.location = res.url;
+				// console.log(res.user);
+				// window.location = res.url;
 			});
 		});
 
@@ -196,7 +193,7 @@
 	$grid.isotope({
 		sortBy: 'dateUpdated',
 		sortAscending: true
-	})
+	});
 
 	$('#filter-dropdown li').delegate('a','click', function(e) {
 
@@ -240,17 +237,37 @@
 
 	});
 
+	$('#onboard').on('click tap touchstart', function(e) {
+		$('#signup-modal').fadeIn();
+	});
+
+	$('body #signup').on('click tap touchstart', function(e) {
+		var data = {
+			email: $('#signupForm input[name="email"]').val(),
+			password: $('#signupForm input[name="password"]').val(),
+			username: $('#signupForm input[name="username"]').val()
+		};
+		$.post('/api/signup', data, function(res) {
+			// localStorage.user = data;
+			console.log(res.user);
+			$('#signup-modal').fadeOut();
+		});
+	});
+
 	$('.video-item').on('click', function(e) {
-		$.post("/api/load/researchModal", { group: $(this).data("group") },
-			function( data ) {
-				$('#researcher-modal').html(data.eventData).fadeIn(function() {
+		var data = {
+			group: $(this).data("group"),
+			user: "{{user.id}}"
+		}
+		$.post("/api/load/researchModal", data,
+			function( res ) {
+				$('#researcher-modal').html(res.eventData).fadeIn(function() {
 					researchContextSetup(data.group);
 				});
 		});
 	});
 
 	var researchContextSetup = function(group) {
-
 
 			$('body #research-close').on('click', function(e) {
 				$('#researcher-modal').fadeOut();
@@ -268,27 +285,69 @@
 					id: group,
 					time: $('#uploaded')["0"].currentTime,
 					note: $('#timestamp-form input').val(),
-					researcher: "{{user.id}}"
+					researcher: "{{user.id}}",
+					category: $('.timestamp-category-dropdown').find(":selected").data('key'),
+					action: $('.timestamp-action-dropdown').find(":selected").data('key')
 				};
-
-				console.log(data);
 
 				$.post("/api/saveTimestamp/", data,
 					function( log ) {
 						console.log(log);
-
-						if (log.msg == "success") {
-							var time = log.timestamp.time;
-							var notes = log.timestamp.notes;
-							$('.timestamp-group').append('<button class="timestamp" data-time="' + time + '">' + time + ": " + notes + '</button>')
-						}
-
+						$('#researcher-modal').html(log.modalData);
+						$('#research-form').html(log.formData);
+						researchContextSetup(log.group);
 				});
 			});
 
+			$('body .timestamp-category-dropdown').on("change", function(e) {
+				var selected = $(this).find(":selected");
+				var data = {
+					group: group,
+					category: selected.data("id")
+				}
+				$.post("/api/load/marker/actions", data,
+					function( log ) {
+						$('#timestamp-actions').html(log.eventData).fadeIn();
+				});
+			});
 
-			$('body .timestamp').on('click tap touchstart', function(e) {
-				$('#uploaded')["0"].currentTime = $(this).data("time");
+			$('body .timestamp-dropdown').on('change', function(e) {
+				var selected = $(this).find(":selected");
+				$('#uploaded')["0"].currentTime = selected.data("time");
+				var data = {
+					group: group,
+					marker: selected.data("id")
+				}
+				$.post("/api/load/form/", data,
+					function( log ) {
+						console.log(log);
+						$('#research-form').html(log.formData);
+						_.each(log.responses, function(res) {
+							var field;
+							$('#research-form .question').each(function() {
+								if ($(this).prop("id") == res.question._id)
+									field = this;
+							});
+							var response = res.answer;
+							if ($(field).find('input')) {
+
+								if ($(field).find('input').prop("type") == "text")
+					        $(field).find('input').val(response);
+								else if ($(field).find('input').prop("type") == "radio") {
+									var checked = $(field).find('input').prop("name") == res.answer;
+									$(checked).prop("checked", true);
+								}
+
+							} else if ($(field).is('select')) {
+
+								var selected = $(field).find('option').val() == res.answer;
+								$(selected).prop('selected', true);
+
+							}
+						});
+						$('#research-form').fadeIn();
+						researchContextSetup(log.group);
+				});
 			});
 
 			$('body #research-send').on('click tap touchstart', function(e) {
@@ -312,17 +371,23 @@
 
 		    });
 
+				var selected = $('.timestamp-dropdown').find(":selected");
+				console.log(selected.data("time"), selected.data("id"))
+
 				var data = {
 					group: group,
 					responses: values,
-					researcher: "{{user.id}}"
+					researcher: "{{user.id}}",
+					marker: selected.data("id")
 				}
+
 				$.post("/api/research/", data,
 					function( log ) {
 						console.log(log);
-
+						$('.timestamp-dropdown .timestamp')[0].prop('selected', true);
+						$('#research-form').hide();
 						// $('#loading').fadeOut(function() {
-							$('#researcher-modal').fadeOut();
+							// $('#researcher-modal').fadeOut();
 						// });
 				});
 			});
