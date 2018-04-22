@@ -15,6 +15,8 @@
 
 	$(document).ready(function() {
 
+		{{> script/core }}
+
 		{{#ifeq section 'index'}}
 
 		if (localStorage.user) {
@@ -224,13 +226,10 @@
 
 			$('#sorting-group li').find('span').hide();
 			$(this).addClass('sorted-by');
-			$(this).find('span').addClass('glyphicon-chevron-down');
-			$(this).find('span').show();
+			$(this).find('span').addClass('glyphicon-chevron-down').show();
 		} else {
-			$(this).find('span').toggleClass('glyphicon-chevron-down');
-			$(this).find('span').toggleClass('glyphicon-chevron-up');
+			$(this).find('span').toggleClass('glyphicon-chevron-down').toggleClass('glyphicon-chevron-up');
 		}
-
 
 		var sortByValue = $(this).attr('data-sort-by');
 	  $grid.isotope({
@@ -282,6 +281,8 @@
 
 	var researchContextSetup = function(group) {
 
+			$('.select2').select2();
+
 			$('body #research-close').on('click', function(e) {
 				$('#researcher-modal').fadeOut();
 			});
@@ -309,10 +310,11 @@
 						$('#researcher-modal').html(log.modalData);
 						$('#research-form').html(log.formData);
 						researchContextSetup(log.group);
+
 				});
 			});
 
-			$('body .timestamp-category-dropdown').on("change", function(e) {
+			$('body .timestamp-category-dropdown').on("select2:select", (e) => {
 				var selected = $(this).find(":selected");
 				var data = {
 					group: group,
@@ -324,12 +326,12 @@
 				});
 			});
 
-			$('body .timestamp-dropdown').on('change', function(e) {
-				var selected = $(this).find(":selected");
+			$('body .timestamp-dropdown').on('select2:select', (e) => {
+				var selected = $('#' + e.params.data.id);
 				$('#uploaded')["0"].currentTime = selected.data("time");
 				var data = {
 					group: group,
-					marker: selected.data("id"),
+					marker: selected.prop("id"),
 					user: "{{user.id}}",
 					action: selected.data("action")
 				}
@@ -341,33 +343,7 @@
 						if ( eventData.responses && eventData.responses.length > 1) {
 							$('#current-response').show();
 						}
-						_.each(eventData.mostRecent, function(res, key) {
-							var field;
-							$('#research-form .question').each(function() {
-								if ($(this).prop("id") == res.question._id)
-									field = this;
-							});
-							var response = res.answer;
-							if ($(field).find('.input').prop("type")) {
-
-								if ($(field).find('.input').prop("type") == "text")
-					        $(field).find('.input').val(response);
-								else if ($(field).find('.input').prop("type") == "radio") {
-									var checked = $(field).find('.input').prop("name") == res.answer;
-									$(checked).prop("checked", true);
-								}
-
-							} else if ($(field).is('select')) {
-
-								var selected;
-								$(field).find('option').each(function() {
-									if ($(this).val() == res.answer)
-										selected = $(this);
-								});
-								$(selected).prop('selected', true);
-
-							}
-						});
+						formFill('#research-form .question', eventData.mostRecent);
 						$('#research-form').fadeIn();
 						researchContextSetup(eventData.group);
 				});
@@ -375,27 +351,7 @@
 
 			$('body #research-send').on('click tap touchstart', function(e) {
 				$('#loading').fadeIn();
-				var values = {};
-				$('#research-form .question').each(function() {
-					var that = $(this);
-					var id = this.id;
-
-					if (that.find('.input').prop("type")) {
-
-						if (that.find('.input').prop("type") == "text")
-			        values[id] = that.find('.input').val();
-						else if (that.find('.input').prop("type") == "radio")
-							values[id] = that.find('.input').is(':checked').prop("name");
-
-					} else if (that.is('select')) {
-
-						var selected = that.find('option:selected');
-						values[id] = $(selected).val();
-
-					}
-
-		    });
-
+				var values = getFormData("#research-form .question");
 				var selected = $('.timestamp-dropdown').find(":selected");
 				console.log(selected.data("time"), selected.data("id"))
 
@@ -410,31 +366,9 @@
 					function( eventData ) {
 						console.log(eventData);
 						$('.timestamp-dropdown .timestamp').prop('selected', true);
-						_.each(eventData.responses, function(res, key) {
-							var field;
-							$('#research-form .question').each(function() {
-								if ($(this).prop("id") == key)
-									field = this;
-							});
-							var response = res.answer;
-							if ($(field).find('.input')) {
+						formFill('#research-form .question', eventData.responses);
 
-								if ($(field).find('.input').prop("type") == "text")
-					        $(field).find('.input').val(response);
-								else if ($(field).find('.input').prop("type") == "radio") {
-									var checked = $(field).find('input').prop("name") == res.answer;
-									$(checked).prop("checked", true);
-								}
-
-							} else if ($(field).is('select')) {
-
-								var selected = $(field).find('option').val() == res.answer;
-								$(selected).prop('selected', true);
-
-							}
-						});
-
-						$('#research-logs').html(eventData.html)
+						$('#research-logs').html(eventData.html);
 
 				});
 			});
@@ -442,16 +376,6 @@
 
 	{{/ifeq}}
 
-		$('.radio-group input[type="radio"]').on('change', function(e){
-			var group = $(this).closest('.radio-wrapper').closest('.radio-group');
-			var otherInputs = $(group).find('input');
-			$.each(otherInputs, function(i, item) {
-				$(item).prop('checked', false);
-			});
-			$(this).prop('checked', true);
-		});
-
-		$('select').select2();
 
 	});
 

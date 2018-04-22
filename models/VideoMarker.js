@@ -41,6 +41,7 @@ VideoMarker.add({
 		ref: 'User',
 		many:false
 	},
+	groupId: { type: String, label: 'Group ID ' },
 	category: { type: String, label: 'Category' },
 	action: { type: String, label: 'Action' }
 

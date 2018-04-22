@@ -19,7 +19,7 @@
       {{/ifeq}}
 
       {{#ifeq this.type "Dropdown"}}
-        <select id="{{this._id}}" class="question">
+        <select id="{{this._id}}" class="question select2">
           <option value="Select">Select Below</option>
           {{#each this.options}}
             <option value="{{this}}">{{this}}</option>

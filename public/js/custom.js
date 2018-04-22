@@ -2,7 +2,7 @@
  * (Site name here)
  * Developed by Engagement Lab, 2016
  * ==============
- * 
+ *
  * EL Web Module global client JS
  * ==========
  */
@@ -15,13 +15,12 @@
  */
 imageLoaded = function(parentElem, callback) {
 
-	parentElem.find('img').first().on('load', function() {
+	parentElem.find('img').last().on('load', function() {
 
 		// Image loaded, callback fires
 		callback();
 
-	})
-	.each(function() {
+	}).each(function() {
 
 		// Force image to dispatch 'load' (cache workaround)
 	  if(this.complete) $(this).load();
@@ -29,4 +28,3 @@ imageLoaded = function(parentElem, callback) {
 	});
 
 };
-

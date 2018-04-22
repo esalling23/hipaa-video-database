@@ -46,8 +46,22 @@ html {
 		margin-top: 5%;
 }
 
-.main {
+.navigation {
+	position: fixed;
+	top: 0px;
+	height: 80px;
+	color: white;
+	background: blue;
+}
 
+.btn, button, select, option, input[type="checkbox"], input[type="radio"], .interactive {
+	cursor: pointer;
+}
+
+.btn-close {
+	position: absolute;
+	top: 10px;
+	right: 10px;
 }
 
 button, input {
@@ -60,6 +74,10 @@ button, input {
 		color: grey;
 
 	}
+}
+
+.form-control {
+	margin: 5px auto;
 }
 
 video {
@@ -98,7 +116,21 @@ video {
 		}
 	}
 
+	&#signup-modal {
+		background: rgba(0, 0, 0, 0.4);
 
+		.signup-wrap {
+			background: white;
+			position: relative;
+			height: 100%;
+			padding: 40px;
+
+			form {
+				float: none;
+				margin: 0 auto;
+			}
+		}
+	}
 
 	&#researcher-modal {
 		* {
@@ -123,7 +155,7 @@ video {
 		input, select {
 			border: 1px solid black;
 			display: block;
-			margin: 0 auto;
+			margin: 10px auto;
 
 			&[type=radio] {
 				display: inline-block;
@@ -169,10 +201,12 @@ video {
 
 	&:focus, &:hover {
 		background-color: $color-light-blue;
+		cursor: pointer;
 	}
 
 	&:active {
 		background-color: $color-blue;
+		cursor: pointer;
 	}
 
 	@media(max-width: 400px) {

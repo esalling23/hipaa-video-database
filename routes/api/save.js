@@ -81,71 +81,84 @@ exports.marker = function(req, res) {
 
   var data = {};
 
-  var questionQuery = Questions.model.find()
-												.populate('actions');
+  var questionQuery = Questions.model.find().populate('actions');
+  var timestampQuery = Timestamp.model.findOne({
+    time: req.body.time,
+    notes: req.body.note,
+    category: req.body.category,
+    action: req.body.action,
+    group: req.body.id
+  });
 
-  Group.model.findOne({ _id: req.body.id }, function(err, group) {
-     console.log(group, "is the group we found")
+  timestampQuery.exec(function(err, marker) {
 
-     var thisTimestamp = new Marker.model({
-       time: req.body.time,
-       researcher: req.body.researcher,
-       notes: req.body.note,
-       category: req.body.category,
-       action: req.body.action
-     });
+    if (marker) res.send({ err: 'Markers must be unique. This particular marker already exists.' });
 
-     console.log(thisTimestamp, "is the timestamp we added");
+    Group.model.findOne({ _id: req.body.id }, function(err, group) {
+       console.log(group, "is the group we found");
 
-     thisTimestamp.save(function(err, timestamp) {
-        if (err) res.throw(err);
+       var thisTimestamp = new Marker.model({
+         time: req.body.time,
+         researcher: req.body.researcher,
+         notes: req.body.note,
+         category: req.body.category,
+         action: req.body.action,
+         group: group._id
+       });
 
-        group.markers.push(timestamp._id);
+       console.log(thisTimestamp, "is the timestamp we added");
 
-        group.save(function(err, updatedGroup) {
+       thisTimestamp.save(function(err, timestamp) {
+          if (err) res.throw(err);
 
-          var newQuery = Group.model.findOne({ _id: updatedGroup._id })
-            .populate('client markers researcherData responses');
+          group.markers.push(timestamp._id);
 
-          newQuery.exec(function(err, result) {
-            data.group = result;
+          group.save(function(err, updatedGroup) {
 
-            questionQuery.exec(function(err, questions) {
-        			var filtered = [];
-        			_.map(questions, function(q) {
-        				_.each(q.actions, function(action) {
-        					console.log(action.key == req.body.action)
-        					if (action.key == req.body.action)
-        						filtered.push(q);
-        				});
-        			});
+            var newQuery = Group.model.findOne({ _id: updatedGroup._id })
+              .populate('client markers researcherData responses');
 
-        			console.log(filtered, "are the filtered Qs");
+            newQuery.exec(function(err, result) {
+              data.group = result;
 
-        			data.questions = filtered;
+              questionQuery.exec(function(err, questions) {
+          			var filtered = [];
+          			_.map(questions, function(q) {
+          				_.each(q.actions, function(action) {
+          					console.log(action.key == req.body.action)
+          					if (action.key == req.body.action)
+          						filtered.push(q);
+          				});
+          			});
 
-        			User.model.findOne({ _id: req.body.researcher }, function(err, user) {
-        				data.user = user;
+          			console.log(filtered, "are the filtered Qs");
 
-                Templates.Load('partials/researcherModal', data, (html) => {
+          			data.questions = filtered;
 
-                  Templates.Load('partials/form', data, (form) => {
+          			User.model.findOne({ _id: req.body.researcher }, function(err, user) {
+          				data.user = user;
 
-                    res.send({
-                      formData: form,
-                      modalData: html,
-                      group: req.body.id
+                  Templates.Load('partials/researcherModal', data, (html) => {
+
+                    Templates.Load('partials/form', data, (form) => {
+
+                      res.send({
+                        formData: form,
+                        modalData: html,
+                        group: req.body.id
+                      });
+
                     });
 
-                  });
-
-          			});
+            			});
+                });
               });
+
             });
 
           });
 
-        });
+       });
 
      });
 
@@ -164,9 +177,11 @@ exports.research = function(req, res) {
        var newResponses = [];
 
        _.each(req.body.responses, function(value, key) {
+         
          var repeat = _.filter(group.researcherData, function(item){
           return item.answer === value && item.question === key;
          });
+
          if (repeat.length > 0) {
            newResponseGroup = new ResearcherResponse.model({
              question: key,

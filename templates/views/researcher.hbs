@@ -12,11 +12,15 @@
 
 
 <div class="container home">
-	{{#ifeq user.accessLvl 'Admin'}}
-		<button class="btn btn-primary" id="onboard">New Client Onboarding</button>
-		{{> signup}}
-	{{/ifeq}}
-	<div class="">
+
+	<div class="navigation">
+		{{#ifeq user.accessLvl 'Admin'}}
+			<h3 class="btn btn-primary" id="onboard">New Client Onboarding</h3>
+			{{> signup}}
+		{{/ifeq}}
+	</div>
+
+	<div>
 
 		<h3>Analyze by clicking on an item below:</h3>
 

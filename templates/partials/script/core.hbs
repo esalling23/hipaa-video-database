@@ -1,0 +1,66 @@
+
+$('.radio-group input[type="radio"]').on('change', function(e){
+	var group = $(this).closest('.radio-wrapper').closest('.radio-group');
+	var otherInputs = $(group).find('input');
+	$.each(otherInputs, function(i, item) {
+		$(item).prop('checked', false);
+	});
+	$(this).prop('checked', true);
+});
+
+$('.select2').select2();
+
+var getFormData = function(formObj) {
+  var values = {};
+  $(formObj).each(function() {
+    var that = $(this);
+    var id = this.id;
+
+    if (that.find('.input').prop("type")) {
+
+      if (that.find('.input').prop("type") == "text")
+        values[id] = that.find('.input').val();
+      else if (that.find('.input').prop("type") == "radio")
+        values[id] = that.find('.input').is(':checked').prop("name");
+
+    } else if (that.is('select')) {
+
+      var selected = that.find('option:selected');
+      values[id] = $(selected).val();
+
+    }
+  });
+  return values;
+}
+
+var formFill = function(formObj, data) {
+
+  _.each(data, function(res, key) {
+    var field;
+    $(formObj).each(function() {
+      if ($(this).prop("id") == res.question._id)
+        field = this;
+    });
+    var response = res.answer;
+    if ($(field).find('.input').prop("type")) {
+
+      if ($(field).find('.input').prop("type") == "text")
+        $(field).find('.input').val(response);
+      else if ($(field).find('.input').prop("type") == "radio") {
+        var checked = $(field).find('.input').prop("name") == res.answer;
+        $(checked).prop("checked", true);
+      }
+
+    } else if ($(field).is('select')) {
+
+      var selected;
+      $(field).find('option').each(function() {
+        if ($(this).val() == res.answer)
+          selected = $(this);
+      });
+      $(selected).prop('selected', true);
+
+    }
+
+  });
+}
