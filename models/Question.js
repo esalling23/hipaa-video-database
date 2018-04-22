@@ -36,8 +36,15 @@ Question.add({
 	client: { type: Boolean, label: 'Is this a client-facing question?' },
   type: { type: Types.Select, label: "Type of Question", options: 'Dropdown, Text, Bubble Select' },
 
-  options: { type: Types.TextArray, label: 'Options', dependsOn: { type: ['Dropdown', 'Bubble Select']}}
+  options: { type: Types.TextArray, label: 'Options', dependsOn: { type: ['Dropdown', 'Bubble Select']}},
 
+	actions: {
+		label: 'Actions for this question',
+		type: Types.Relationship,
+		ref: 'Category',
+		many: true,
+		filters: { type: 'Marker Action' }
+	}
 });
 
 /**

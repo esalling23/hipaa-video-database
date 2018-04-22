@@ -47,6 +47,7 @@ ResearcherResponse.add({
 		ref: 'User',
 		many: false
 	},
+	isUpdate: { type: Boolean, label: 'Is An Update', note: 'Check this if this is an update to a previous research response'},
 	marker: { type: String, hidden: false },
 	group: { type: String, hidden: false }
 

@@ -6,6 +6,14 @@
 
 @include font-face(Font-Name, 'https://path/to/cdn/font', null, null, eot woff ttf);
 
+
+.m-3 {
+	margin: 10px;
+}
+
+.p-3 {
+	padding: 10px;
+}
 // Use for any elements hidden initilly
 .hidden {
 	visibility: hidden;
@@ -18,7 +26,7 @@ html {
 .body {
   background-color: white;
   color: black;
-  font-family: "HalisLight";
+  font-family: 'Inconsolata', monospace;
 	overflow: scroll;
 }
 
@@ -111,8 +119,6 @@ video {
 
 	form {
 		display: block;
-		padding: 10px;
-		margin: 10px auto;
 
 		input, select {
 			border: 1px solid black;
@@ -132,12 +138,42 @@ video {
 	}
 }
 
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+
+		&:hover, &:active {
+			background: blue;
+			color: white;
+		}
+
+		&:visited, &:focus {
+			background: white;
+			color: black;
+		}
+}
+
+#video-upload {
+	display: none;
+}
+
 .video-item {
 	padding: 8px;
 	margin: 8px;
+	margin-left: 0px;
 	border: 1px solid black;
 	width: 40%;
 	display: inline-block;
+
+	&:focus, &:hover {
+		background-color: $color-light-blue;
+	}
+
+	&:active {
+		background-color: $color-blue;
+	}
 
 	@media(max-width: 400px) {
 		width: 100%;
@@ -145,14 +181,26 @@ video {
 	}
 }
 
+.log {
+	border: 2px solid black;
+	padding: 10px;
+	margin: 10px;
+	margin-left: 0px;
+}
+
+.btn-group {
+	margin-bottom: 10px;
+}
+
 .filters {
-	margin-left: 25px;
+	margin-left: 0px;
 }
 
 .sorting {
 
 	ul {
 		list-style-type: none;
+		padding: 0px;
 	}
 
 		li {

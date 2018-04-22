@@ -6,6 +6,7 @@ var Response = keystone.list('ClientResponse');
 var Group = keystone.list('ClientResponseGroup');
 var Marker = keystone.list('VideoMarker');
 var TemplateLoader = require('../../lib/TemplateLoader');
+var Templates = new TemplateLoader();
 
 exports.responses = function(req, res) {
     var currentGroup = req.body.group;
@@ -78,8 +79,10 @@ exports.upload = function(req, res) {
 
 exports.marker = function(req, res) {
 
-  var Templates = new TemplateLoader();
   var data = {};
+
+  var questionQuery = Questions.model.find()
+												.populate('actions');
 
   Group.model.findOne({ _id: req.body.id }, function(err, group) {
      console.log(group, "is the group we found")
@@ -107,8 +110,19 @@ exports.marker = function(req, res) {
           newQuery.exec(function(err, result) {
             data.group = result;
 
-            Questions.model.find({ client: false }, function(err, questions) {
-        			data.questions = questions;
+            questionQuery.exec(function(err, questions) {
+        			var filtered = [];
+        			_.map(questions, function(q) {
+        				_.each(q.actions, function(action) {
+        					console.log(action.key == req.body.action)
+        					if (action.key == req.body.action)
+        						filtered.push(q);
+        				});
+        			});
+
+        			console.log(filtered, "are the filtered Qs");
+
+        			data.questions = filtered;
 
         			User.model.findOne({ _id: req.body.researcher }, function(err, user) {
         				data.user = user;
@@ -140,24 +154,20 @@ exports.marker = function(req, res) {
 
 exports.research = function(req, res) {
 
-   Group.model.findOne({ _id: req.body.group }, function(err, group) {
+    var query = Group.model.findOne({ _id: req.body.group }).populate('researcherData');
+    query.exec(function(err, group) {
+
        console.log(group, "is the group we found")
 
        console.log(req.body);
-
-       // ResearcherResponse.findOne({ _id: req.body.resId }, function(err, research) {
-       //
-       //
-       //
-       // })
+       var count = 0;
+       var newResponses = [];
 
        _.each(req.body.responses, function(value, key) {
-
-         // if (research) {
-         //   // update
-         //   research.answer = value;
-         // } else {
-           //new
+         var repeat = _.filter(group.researcherData, function(item){
+          return item.answer === value && item.question === key;
+         });
+         if (repeat.length > 0) {
            newResponseGroup = new ResearcherResponse.model({
              question: key,
              answer: value,
@@ -165,25 +175,49 @@ exports.research = function(req, res) {
              group: req.body.group,
              marker: req.body.marker
            });
-         // }
-         // console.log(value, key);
 
+           console.log(newResponseGroup, " we just made this");
 
+           newResponseGroup.save(function(err, post) {
+             // console.log(post, " is the new response group we saved");
+             newResponses.push(post);
+             group.researcherData.push(post);
 
-         console.log(newResponseGroup);
-
-         newResponseGroup.save(function(err, post) {
-           console.log(post);
-           group.researcherData.push(post);
-
-           group.save(function(err, updatedGroup) {
-             console.log(updatedGroup, "is the updated group with the saved researcher response")
-             res.send( updatedGroup );
+             group.save(function(err, updatedGroup) {
+               // console.log(updatedGroup, "is the updated group with the saved researcher response")
+               count++;
+             });
            });
+         } else
+           count++;
 
-         });
+         console.log(count, Object.keys(req.body.responses).length);
+         if (count == Object.keys(req.body.responses).length) {
+           query.exec(function(err, group) {
+             var previous = _.filter(group.researcherData, function(opt) {
+           			// console.log(opt);
+           			// console.log(opt.marker, req.body.marker)
+           			if (opt.marker)
+           				return opt.marker == req.body.marker;
+           	 }).reverse();
 
-     });
+             previous = _.pluck(previous, "_id");
 
-  });
+             console.log(previous);
+
+             var dataQuery = ResearcherResponse.model.find({ "_id": { "$in": previous } }).populate("question researcher");
+
+             dataQuery.exec(function(err, logs) {
+               // console.log(group, logs)
+
+               Templates.Load('partials/logs', { researchLogs: logs }, (html) => {
+                 res.send({ html: html, responses: newResponses });
+               });
+             });
+           });
+         }
+
+      });
+
+    });
 }

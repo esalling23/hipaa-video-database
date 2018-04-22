@@ -62,41 +62,41 @@ ClientResponseGroup.add({
 
 });
 
-
-ClientResponseGroup.schema.statics.removeResourceRef = function(resourceId, callback) {
-
-    ClientResponseGroup.model.update({
-            $or: [{
-                'responses': resourceId,
-								'client': resourceId,
-								'researcherData': resourceId,
-								'markers': resourceId
-            }]
-        },
-
-        {
-            $pull: {
-							'responses': resourceId,
-							'client': resourceId,
-							'researcherData': resourceId,
-							'markers': resourceId
-            }
-        },
-
-        {
-            multi: true
-        },
-
-        function(err, result) {
-
-            callback(err, result);
-
-            if (err)
-                console.error(err);
-        }
-    );
-
-};
+// 
+// ClientResponseGroup.schema.statics.removeResourceRef = function(resourceId, callback) {
+//
+//     ClientResponseGroup.model.update({
+//             $or: [{
+//                 'responses': resourceId,
+// 								'client': resourceId,
+// 								'researcherData': resourceId,
+// 								'markers': resourceId
+//             }]
+//         },
+//
+//         {
+//             $pull: {
+// 							'responses': resourceId,
+// 							'client': resourceId,
+// 							'researcherData': resourceId,
+// 							'markers': resourceId
+//             }
+//         },
+//
+//         {
+//             multi: true
+//         },
+//
+//         function(err, result) {
+//
+//             callback(err, result);
+//
+//             if (err)
+//                 console.error(err);
+//         }
+//     );
+//
+// };
 
 ClientResponseGroup.schema.pre('save', function(next) {
 

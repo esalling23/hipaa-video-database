@@ -11,16 +11,16 @@
 --}}
 
 
-<div class="container-fluid home">
+<div class="container home">
 	{{#ifeq user.accessLvl 'Admin'}}
-		<button id="onboard">New Client Onboarding</button>
+		<button class="btn btn-primary" id="onboard">New Client Onboarding</button>
 		{{> signup}}
 	{{/ifeq}}
-	<div class="row">
+	<div class="">
 
 		<h3>Analyze by clicking on an item below:</h3>
 
-		<div class="row filters">
+		<div class="btn-row filters">
 			<div class="btn-group clearfix">
 				<button id="button-group-filters" class="filter-options btn btn-default dropdown-toggle" type="button" data-filter-group="{{combine @key}}" data-toggle="dropdown">
 					<div class="button-text">Filter <span class="bigCaret"></span></div>
@@ -40,7 +40,7 @@
 			</div>
 		</div>
 
-		<div class="row sorting">
+		<div class="sorting">
 			<div class="btn-group clearfix">
 				<ul id="sorting-group" role="menu">
 						{{#each filters}}

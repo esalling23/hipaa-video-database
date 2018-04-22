@@ -1,0 +1,11 @@
+{{#if this.researchLogs}}
+  <h2>Previous Logs:</h2>
+  {{#each this.researchLogs}}
+    <div class="log">
+      <h4><strong>Date:</strong> {{createdAt}}</h4>
+      <h4><strong>Updated by:</strong> {{researcher.name}} (ID: {{researcher._id}})</h4>
+      <p><strong>Question:</strong> "{{question.question}}"</p>
+      <p><strong>Answer:</strong>"{{answer}}"</p>
+    </div>
+  {{/each}}
+{{/if}}

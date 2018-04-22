@@ -33,7 +33,6 @@
 		var signupText = $('#loginToggle').data("signup");
 		var loginText = $('#loginToggle').data("login");
 		$('#loginToggle').text(signupText);
-
 		$('#loginToggle').on('click tap touchstart', function(e) {
 
 			e.preventDefault();
@@ -55,7 +54,11 @@
 			login = !login;
 		});
 
-
+		$('#loginForm input').keyup(function(event) {
+		    if (event.keyCode === 13) {
+		        $("#login").click();
+		    }
+		});
 		$('body #login').on('click tap touchstart', function(e) {
 			var data = {
 				email: $('#loginForm input[name="email"]').val(),
@@ -72,7 +75,7 @@
 				}
 
 				// console.log(res.user);
-				// window.location = res.url;
+				window.location = res.url;
 			});
 		});
 
@@ -233,12 +236,22 @@
 	  $grid.isotope({
 			sortBy: sortByValue,
 		  sortAscending: $(this).find('span').hasClass('glyphicon-chevron-down')
-	 });
+	  });
 
 	});
 
 	$('#onboard').on('click tap touchstart', function(e) {
 		$('#signup-modal').fadeIn();
+	});
+
+	$('#signupForm input').keyup(function(event) {
+			if (event.keyCode === 13) {
+					$("#signup").click();
+			}
+	});
+
+	$('#signup-close').on('click tap touchstart', function(e) {
+		$('#signup-modal').fadeOut();
 	});
 
 	$('body #signup').on('click tap touchstart', function(e) {
@@ -316,37 +329,47 @@
 				$('#uploaded')["0"].currentTime = selected.data("time");
 				var data = {
 					group: group,
-					marker: selected.data("id")
+					marker: selected.data("id"),
+					user: "{{user.id}}",
+					action: selected.data("action")
 				}
 				$.post("/api/load/form/", data,
-					function( log ) {
-						console.log(log);
-						$('#research-form').html(log.formData);
-						_.each(log.responses, function(res) {
+					function( eventData ) {
+						console.log(eventData);
+						$('#research-form').html(eventData.formData);
+						$('#research-logs').html(eventData.logsData);
+						if ( eventData.responses && eventData.responses.length > 1) {
+							$('#current-response').show();
+						}
+						_.each(eventData.mostRecent, function(res, key) {
 							var field;
 							$('#research-form .question').each(function() {
 								if ($(this).prop("id") == res.question._id)
 									field = this;
 							});
 							var response = res.answer;
-							if ($(field).find('input')) {
+							if ($(field).find('.input').prop("type")) {
 
-								if ($(field).find('input').prop("type") == "text")
-					        $(field).find('input').val(response);
-								else if ($(field).find('input').prop("type") == "radio") {
-									var checked = $(field).find('input').prop("name") == res.answer;
+								if ($(field).find('.input').prop("type") == "text")
+					        $(field).find('.input').val(response);
+								else if ($(field).find('.input').prop("type") == "radio") {
+									var checked = $(field).find('.input').prop("name") == res.answer;
 									$(checked).prop("checked", true);
 								}
 
 							} else if ($(field).is('select')) {
 
-								var selected = $(field).find('option').val() == res.answer;
+								var selected;
+								$(field).find('option').each(function() {
+									if ($(this).val() == res.answer)
+										selected = $(this);
+								});
 								$(selected).prop('selected', true);
 
 							}
 						});
 						$('#research-form').fadeIn();
-						researchContextSetup(log.group);
+						researchContextSetup(eventData.group);
 				});
 			});
 
@@ -354,18 +377,20 @@
 				$('#loading').fadeIn();
 				var values = {};
 				$('#research-form .question').each(function() {
-					console.log(this.id);
-					if ($(this).find('input')) {
+					var that = $(this);
+					var id = this.id;
 
-						if ($(this).find('input').prop("type") == "text")
-			        values[this.id] = $(this).find('input').val();
-						else if ($(this).find('input').prop("type") == "radio")
-							values[this.id] = $(this).find('input').is(':checked').prop("name");
+					if (that.find('.input').prop("type")) {
 
-					} else if ($(this).is('select')) {
+						if (that.find('.input').prop("type") == "text")
+			        values[id] = that.find('.input').val();
+						else if (that.find('.input').prop("type") == "radio")
+							values[id] = that.find('.input').is(':checked').prop("name");
 
-						var selected = $(this).find('option:selected');
-						values[this.id] = $(selected).val();
+					} else if (that.is('select')) {
+
+						var selected = that.find('option:selected');
+						values[id] = $(selected).val();
 
 					}
 
@@ -382,13 +407,35 @@
 				}
 
 				$.post("/api/research/", data,
-					function( log ) {
-						console.log(log);
-						$('.timestamp-dropdown .timestamp')[0].prop('selected', true);
-						$('#research-form').hide();
-						// $('#loading').fadeOut(function() {
-							// $('#researcher-modal').fadeOut();
-						// });
+					function( eventData ) {
+						console.log(eventData);
+						$('.timestamp-dropdown .timestamp').prop('selected', true);
+						_.each(eventData.responses, function(res, key) {
+							var field;
+							$('#research-form .question').each(function() {
+								if ($(this).prop("id") == key)
+									field = this;
+							});
+							var response = res.answer;
+							if ($(field).find('.input')) {
+
+								if ($(field).find('.input').prop("type") == "text")
+					        $(field).find('.input').val(response);
+								else if ($(field).find('.input').prop("type") == "radio") {
+									var checked = $(field).find('input').prop("name") == res.answer;
+									$(checked).prop("checked", true);
+								}
+
+							} else if ($(field).is('select')) {
+
+								var selected = $(field).find('option').val() == res.answer;
+								$(selected).prop('selected', true);
+
+							}
+						});
+
+						$('#research-logs').html(eventData.html)
+
 				});
 			});
 	}

@@ -14,11 +14,13 @@
 <div class="container-fluid home">
 	<div class="row">
 		<div class="col-md-6">
-			<h3>Start recording below</h3>
+			<h3>Upload or start recording below:</h3>
 
 			<form action="javascript:void(0);" method="post" enctype="multipart/form-data">
-			  <input class="form-control" type="file" name="video" accept="video/*" id="videoCapture" capture>
-			  <!-- <input class="btn btn-primary" type="button" value="Upload" id="uploadVideo"> -->
+				<label for="video-upload" class="custom-file-upload">
+				    <i class="fa fa-cloud-upload"></i> Upload
+				</label>
+				<input id="video-upload" class="form-control" type="file" name="video" accept="video/*" id="videoCapture" capture>
 			</form>
 			<img id="loading" style="display:none;" src="http://res.cloudinary.com/esalling/image/upload/v1518293471/giphy_yyozmw.gif">
 

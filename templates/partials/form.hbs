@@ -1,20 +1,37 @@
 {{#each questions}}
 	{{#ifeq this.type "Text"}}
-	<p id="{{this.id}}" class="question">{{this.question}}<br>
-		<input name="{{this.question}}" label="{{this.question}}" type="text"></p>
+	<div class="text-input question" id="{{this.id}}">
+	<label for="{{this.key}}">{{this.question}}</label>
+		<input class="form-control input" name="{{this.question}}" label="{{this.question}}" type="text" id={{this.key}}></p>
+	</div>
 	{{/ifeq}}
 
 
 	{{#ifeq this.type "Bubble Select"}}
 		<div class="radio-group question" id="{{this.id}}">
+		{{this.question}}
 		{{#each this.options}}
-			<div class="radio-wrapper"><input type="radio" name="{{this}}" value="{{this}}"> {{this}}</div>
+			<label class="form-check-label radio-wrapper">
+        <input type="radio" class="form-check-input input" name="{{this}}" id="optionsRadios3" value="{{this}}">
+        {{this}}
+      </label>
 		{{/each}}
 	</div>
 	{{/ifeq}}
 
+	{{#ifeq this.type "Checkmark"}}
+		<div class="checkmark question" id="{{this.id}}">
+			{{this.question}}
+			<label class="form-check-label">
+	      <input type="checkbox" class="form-check-input input">
+	      {{this.answer}}
+	    </label>
+		</div>
+	{{/ifeq}}
+
 	{{#ifeq this.type "Dropdown"}}
-		<select id="{{this.id}}" class="question">
+		{{this.question}}
+		<select id="{{this.id}}" class="question form-control">
 			<option value="Select">Select Below</option>
 			{{#each this.options}}
 				<option value="{{this}}">{{this}}</option>
@@ -24,4 +41,4 @@
 
 {{/each}}
 
-<button type="button" id="research-send">Submit</button>
+<button type="button" class="btn btn-primary" id="research-send">Submit</button>

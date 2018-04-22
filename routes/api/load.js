@@ -8,6 +8,7 @@ var _ = require('underscore')
 		Questions = keystone.list('Question'),
 		Category = keystone.list('Category');
 
+
 // Researcher Modal
 exports.researchModal = function(req, res) {
 
@@ -27,17 +28,12 @@ exports.researchModal = function(req, res) {
 			console.log(categories);
 			data.markerCategories = _.where(categories, { type: 'Marker Category' });
 
-			Questions.model.find({ client: false }, function(err, questions) {
-				data.questions = questions;
+			User.model.findOne({ _id: req.body.user }, function(err, user) {
+				data.user = user;
 
-				User.model.findOne({ _id: req.body.user }, function(err, user) {
-					data.user = user;
+				Templates.Load('partials/researcherModal', data, (html) => {
 
-					Templates.Load('partials/researcherModal', data, (html) => {
-
-						res.send({ eventData: html, group: result._id });
-
-					});
+					res.send({ eventData: html, group: result._id });
 
 				});
 
@@ -58,7 +54,10 @@ exports.form = function(req, res) {
 	console.log(req.body, "is the data we sent to the form loader");
 
 	var groupQuery = ResearcherResponse.model.find()
-										.populate('question researcher');
+												.populate('question researcher');
+
+	var questionQuery = Questions.model.find()
+												.populate('actions');
 
 	groupQuery.exec(function(err, result) {
 		var options = _.where(result, { group: req.body.group });
@@ -70,21 +69,68 @@ exports.form = function(req, res) {
 				return opt.marker == req.body.marker;
 		});
 
-		Questions.model.find({ client: false }, function(err, questions) {
-			data.questions = questions;
+		var grouped = _.groupBy(options, function(opt) {
+			return opt.question._id;
+		});
+
+		console.log(grouped);
+
+		var mostRecent = [];
+
+		_.each(grouped, function(group) {
+			group = group.reverse();
+			mostRecent.push(group[0]);
+		});
+
+		if (options.length > 1) {
+			var logs = options.reverse();
+		}
+
+		questionQuery.exec(function(err, questions) {
+			var filtered = [];
+			_.map(questions, function(q) {
+				_.each(q.actions, function(action) {
+					console.log(action.key == req.body.action)
+					if (action.key == req.body.action)
+						filtered.push(q);
+				});
+			});
+
+			console.log(filtered, "are the filtered Qs");
+
+			data.questions = filtered;
+
+			console.log(data.questions, "are the questions");
 
 			User.model.findOne({ _id: req.body.user }, function(err, user) {
 				data.user = user;
 
-				Templates.Load('partials/form', data, (html) => {
+				Templates.Load('partials/form', data, (formsHtml) => {
 
-					res.send({ formData: html, group: req.body.group, responses: options });
+					Templates.Load('partials/logs', { researchLogs: logs }, (logsHtml) => {
+
+						res.send({
+							formData: formsHtml,
+							logsData: logsHtml,
+							group: req.body.group,
+							responses: options,
+							mostRecent: mostRecent
+						});
+
+					});
 
 				});
+
 			});
 
 		});
+
 	});
+
+}
+
+exports.logs = function(req, res) {
+
 
 }
 
