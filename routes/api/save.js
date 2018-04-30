@@ -66,11 +66,13 @@ exports.upload = function(req, res) {
             client: req.body.data.user
         });
 
-        console.log(newUpload, 'is the new upload')
+        console.log(newUpload, ' is the new upload...')
 
         newUpload.save(function(err, post) {
+          console.log(err, post);
+          if (err) console.log(err);
             // post has been saved
-            console.log("Uploaded video!", post);
+            console.log("Uploaded video!!!!   ", post);
             res.send( post );
         });
 
@@ -82,7 +84,7 @@ exports.marker = function(req, res) {
   var data = {};
 
   var questionQuery = Questions.model.find().populate('actions');
-  var timestampQuery = Timestamp.model.findOne({
+  var timestampQuery = Marker.model.findOne({
     time: req.body.time,
     notes: req.body.note,
     category: req.body.category,
@@ -177,12 +179,14 @@ exports.research = function(req, res) {
        var newResponses = [];
 
        _.each(req.body.responses, function(value, key) {
-         
+
          var repeat = _.filter(group.researcherData, function(item){
           return item.answer === value && item.question === key;
          });
 
-         if (repeat.length > 0) {
+         console.log(repeat, "is the repeater")
+
+         if (!repeat || repeat.length <= 0) {
            newResponseGroup = new ResearcherResponse.model({
              question: key,
              answer: value,
@@ -218,15 +222,17 @@ exports.research = function(req, res) {
 
              previous = _.pluck(previous, "_id");
 
-             console.log(previous);
+             // console.log(previous);
 
              var dataQuery = ResearcherResponse.model.find({ "_id": { "$in": previous } }).populate("question researcher");
 
              dataQuery.exec(function(err, logs) {
-               // console.log(group, logs)
+               console.log(group, logs)
 
-               Templates.Load('partials/logs', { researchLogs: logs }, (html) => {
-                 res.send({ html: html, responses: newResponses });
+               Templates.Load('partials/logs', { researchLogs: logs }, (logsHtml) => {
+                 Templates.Load('partials/current-log', {  }, (currentHtml) => {
+                   res.send({ logs: logsHtml, currentLog: currentHtml, responses: newResponses, success: true });
+                 });
                });
              });
            });

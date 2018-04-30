@@ -1,5 +1,4 @@
 <div class="row modal-inner research">
-  <div id="research-close btn-close" class="btn btn-primary">X</div>
 
   <div class="col-md-4">
 
@@ -13,7 +12,7 @@
     controls controlsList="nodownload nofullscreen"
     src="{{group.url}}"></video>
 
-    <form id="timestamp-form">
+    <form id="timestamp-form" data-send="add-timestamp">
       Current time: <span id="current-timestamp"></span>
       <input type="text" class="form-control" placeholder="Notes">
 
@@ -26,7 +25,7 @@
 
       <select class="timestamp-action-dropdown form-control" id="timestamp-actions" style="display:none"></select>
 
-      <button type="button" class="btn btn-primary" id="add-timestamp">Add Video Marker</button>
+      <button style="display:none" type="button" class="btn btn-primary" id="add-timestamp">Add Video Marker</button>
     </form>
 
   </div>
@@ -44,14 +43,20 @@
       <!-- Marker Dropdown -->
       <select class="timestamp-dropdown form-control select2">
         <option>{{#if group.markers}}Select a timestamp{{else}}No timestamps have been added. Add one to start analysis.{{/if}}</option>
-        {{#each group.markers}}
-        <option class="timestamp" data-time="{{this.time}}" data-id="{{this._id}}" data-action="{{this.action}}">{{this.time}}: {{this.notes}}</option>
+        {{#each groupedMarkers}}
+        <optgroup label="{{@key}}s">
+          {{#each this}}
+          <option class="timestamp" id="{{this._id}}" data-time="{{this.time}}" data-action="{{this.action}}">{{this.actionName}} ({{this.time}} sec): {{this.notes}}</option>
+          {{/each}}
+        </optgroup>
         {{/each}}
       </select>
 
-      <h2 id="current-response" style="display:none">Current Response:</h2>
+      <div id="current-response" style="display:none"></div>
 
-      <form id="research-form" data-group="{{group.id}}" data-response=""></form>
+      <form id="research-form" data-send="research-send" data-group="{{group.id}}" data-response="">
+
+      </form>
 
       <div id="research-logs"></div>
 

@@ -31,25 +31,28 @@
 
 		{{!-- {{> nav}} --}}
 		{{#ifeq section 'client'}}
-		<div id="upload-modal" class="modal" style="display:none">
-			<span class="glyphicon glyphicon-remove">
-			{{>uploadModal}}
+		<div class="modal" style="display:none">
+			<span id="upload-close" class="glyphicon glyphicon-remove btn btn-primary btn-close"></span>
+			<div id="upload-modal">{{>uploadModal}}</div>
 		</div>
 		{{/ifeq}}
 
 		{{#ifeq section 'researcher'}}
-		<div id="researcher-modal" class="modal" style="display:none">
-			<span class="glyphicon glyphicon-remove">
-			{{>researcherModal}}
+		<div class="modal" style="display:none">
+			<span id="research-close" class="glyphicon glyphicon-remove btn btn-primary btn-close"></span>
+			<div id="researcher-modal">{{>researcherModal}}</div>
 		</div>
 		{{/ifeq}}
 
 		<!-- page wrapper start -->
 		<!-- ================ -->
 		<div class="page-wrapper">
+			<div class="page">
 
 			<!-- BODY CONTENT START -->
-			{{{body}}}
+				{{{body}}}
+			</div>
+
 
 			{{!-- {{> footer}} --}}
 

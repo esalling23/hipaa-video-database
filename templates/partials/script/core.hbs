@@ -1,4 +1,11 @@
 
+$('form input').keyup(function(event) {
+		if (event.keyCode === 13) {
+			var form = $(event.currentTarget).closest("form");
+				$("#" + $(form).dataset["sendTo"]).click();
+		}
+});
+
 $('.radio-group input[type="radio"]').on('change', function(e){
 	var group = $(this).closest('.radio-wrapper').closest('.radio-group');
 	var otherInputs = $(group).find('input');

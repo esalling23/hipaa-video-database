@@ -9,7 +9,7 @@
 
 	{{#ifeq this.type "Bubble Select"}}
 		<div class="radio-group question" id="{{this.id}}">
-		{{this.question}}
+		<p>{{this.question}}</p>
 		{{#each this.options}}
 			<label class="form-check-label radio-wrapper">
         <input type="radio" class="form-check-input input" name="{{this}}" id="optionsRadios3" value="{{this}}">
@@ -30,7 +30,7 @@
 	{{/ifeq}}
 
 	{{#ifeq this.type "Dropdown"}}
-		{{this.question}}
+		<label for="{{this.id}}">{{this.question}}</label>
 		<select id="{{this.id}}" class="question form-control">
 			<option value="Select">Select Below</option>
 			{{#each this.options}}
@@ -41,4 +41,4 @@
 
 {{/each}}
 
-<button type="button" class="btn btn-primary" id="research-send">Submit</button>
+<button type="button" class="btn btn-primary btn-alt" id="{{type}}-send">Submit</button>

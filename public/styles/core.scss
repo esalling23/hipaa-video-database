@@ -24,10 +24,15 @@ html {
 }
 // Body
 .body {
-  background-color: white;
-  color: black;
+  background-color: $color-light;
+  color: $color-dark;
   font-family: 'Inconsolata', monospace;
 	overflow: scroll;
+}
+
+.page {
+	max-width: 1024px;
+	margin: 0 auto;
 }
 
 .desktop-only {
@@ -46,26 +51,58 @@ html {
 		margin-top: 5%;
 }
 
+
+
 .navigation {
 	position: fixed;
 	top: 0px;
+	left: 0px;
 	height: 80px;
-	color: white;
-	background: blue;
+	width: 100%;
+	margin: 0px;
+
+	color: $color-light;
+	background: $color-blue;
+
+	.inner-nav {
+		max-width: 1024px;
+		margin: 0 auto;
+		padding-left: 40px;
+
+		.nav-item {
+			color: $color-light;
+			width: auto;
+			margin: 0px;
+			margin-right: 20px;
+			padding-bottom: 5px;
+			display: inline;
+
+			&:hover, &:focus {
+				border-bottom: 3px solid $color-light;
+			}
+		}
+	}
+}
+
+.page {
+	padding-top: 80px;
+}
+
+.row {
+	padding: 0px 40px 0px 40px;
 }
 
 .btn, button, select, option, input[type="checkbox"], input[type="radio"], .interactive {
 	cursor: pointer;
 }
 
-.btn-close {
+body .btn-close {
 	position: absolute;
 	top: 10px;
 	right: 10px;
 }
 
 button, input {
-	border: 1px solid black;
 	text-align: center;
 	margin: 10px auto;
 
@@ -74,6 +111,44 @@ button, input {
 		color: grey;
 
 	}
+}
+
+button, .btn {
+	-webkit-box-shadow: rgba(0, 0, 0, 0.35) 2px 2px 8px 0px;
+	-moz-box-shadow: rgba(0, 0, 0, 0.35) 2px 2px 8px 0px;
+	box-shadow: rgba(0, 0, 0, 0.35) 2px 2px 8px 0px;
+	background-color: $color-bg-dark;
+	color: $color-dark;
+	border: 0px;
+
+	&:hover, &:focus {
+		background-color: $color-bg-dark;
+		color: $color-light;
+		border: 0px;
+	}
+}
+
+.btn-alt {
+	background-color: $color-blue-light;
+	color: $color-dark;
+	box-shadow: none;
+
+	&:hover, &:focus {
+		background-color: $color-blue;
+		color: $color-light;
+		border: 0px;
+	}
+}
+
+input, select {
+	background: $color-bg-input;
+	border: 0px;
+	text-align: left;
+}
+
+label {
+	margin-top: 10px;
+	margin-bottom: 0px;
 }
 
 .form-control {
@@ -85,9 +160,15 @@ video {
 }
 
 .box {
-	border: 2px solid black;
+	background: $color-bg-dark;
 	padding: 10px;
 	margin-bottom: 20px;
+	text-align: left;
+}
+
+#onboard {
+	cursor: pointer;
+	line-height: 80px;
 }
 
 .modal {
@@ -95,7 +176,7 @@ video {
 	height: 100%;
 	width: 100%;
 	margin: 0;
-	background: white;
+	background: $color-light;
 	text-align: center;
 	padding: 5%;
 	padding-top: 2%;
@@ -142,20 +223,17 @@ video {
 			margin-bottom: 20px;
 		}
 
-		#research-close {
-			position: absolute;
-			top: 40px;
-			right: 20px;
-		}
 	}
 
 	form {
 		display: block;
+		text-align: left;
 
 		input, select {
-			border: 1px solid black;
+			border: 1px solid $color-dark;
 			display: block;
 			margin: 10px auto;
+			margin-top: 0px;
 
 			&[type=radio] {
 				display: inline-block;
@@ -163,28 +241,20 @@ video {
 		}
 
 		.radio-group {
-			border: 1px solid black;
+			border: 1px solid $color-dark;
 			padding: 4px;
-			margin: 4px;
 		}
 	}
 }
 
+
 .custom-file-upload {
-    border: 1px solid #ccc;
-    display: inline-block;
-    padding: 6px 12px;
-    cursor: pointer;
+    margin-bottom: 20px !important;
+}
 
-		&:hover, &:active {
-			background: blue;
-			color: white;
-		}
-
-		&:visited, &:focus {
-			background: white;
-			color: black;
-		}
+#loading {
+	height: 40px;
+	margin-top: -10px;
 }
 
 #video-upload {
@@ -195,17 +265,18 @@ video {
 	padding: 8px;
 	margin: 8px;
 	margin-left: 0px;
-	border: 1px solid black;
+	border: 0px;
 	width: 40%;
 	display: inline-block;
+	background: $color-blue-light;
 
 	&:focus, &:hover {
-		background-color: $color-light-blue;
+		background-color: $color-bg-dark;
 		cursor: pointer;
 	}
 
 	&:active {
-		background-color: $color-blue;
+		background-color: $color-blue-light;
 		cursor: pointer;
 	}
 
@@ -215,8 +286,34 @@ video {
 	}
 }
 
+#current-response {
+	background: $color-light;
+	margin: 10px 0px;
+	padding: 10px;
+	h2 {
+		margin-top: 0px;
+	}
+	.current-log {
+		background: $color-light;
+		margin-bottom: 20px;
+		p {
+			padding: 0px;
+			margin: 0px;
+
+		}
+	}
+}
+
+.sub-text {
+	color: transparentize($color-dark, 0.3);
+	span {
+		display: block;
+
+	}
+}
+
 .log {
-	border: 2px solid black;
+	background: darken($color-light, 20%);
 	padding: 10px;
 	margin: 10px;
 	margin-left: 0px;
@@ -240,13 +337,5 @@ video {
 		li {
 			display: inline-block;
 		}
-
-}
-
-.home {
-
-	#title {
-
-	}
 
 }

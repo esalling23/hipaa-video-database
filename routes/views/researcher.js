@@ -46,6 +46,10 @@ exports = module.exports = function(req, res) {
             locals.questionaire = result;
 
             queryUploads.exec(function(err, uploads) {
+              uploads = _.filter(uploads, function(u) {
+                return u.responses.length > 0;
+              });
+              
               locals.uploads = uploads;
               console.log(uploads);
 

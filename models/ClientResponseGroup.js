@@ -62,7 +62,7 @@ ClientResponseGroup.add({
 
 });
 
-// 
+//
 // ClientResponseGroup.schema.statics.removeResourceRef = function(resourceId, callback) {
 //
 //     ClientResponseGroup.model.update({
@@ -100,23 +100,26 @@ ClientResponseGroup.add({
 
 ClientResponseGroup.schema.pre('save', function(next) {
 
-	// console.log(this);
+	console.log(this);
 	var that = this;
 
-	_.each(that.researcherData, function(response) {
-		ResearcherResponse.model.findOne({ _id: response }).exec(function(err, result) {
-			if (!result)
-				next();
-			else {
+	if (that.researcherData.length > 0) {
+		_.each(that.researcherData, function(response) {
+			ResearcherResponse.model.findOne({ _id: response }).exec(function(err, result) {
+				if (!result)
+					next();
+				else {
 
-				result.group = that._id;
-				result.save();
+					result.group = that._id;
+					result.save();
 
-				next();
-			}
+					next();
+				}
 
+			});
 		});
-	});
+	} else
+		next();
 
 });
 

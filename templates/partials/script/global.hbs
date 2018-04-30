@@ -56,11 +56,6 @@
 			login = !login;
 		});
 
-		$('#loginForm input').keyup(function(event) {
-		    if (event.keyCode === 13) {
-		        $("#login").click();
-		    }
-		});
 		$('body #login').on('click tap touchstart', function(e) {
 			var data = {
 				email: $('#loginForm input[name="email"]').val(),
@@ -85,22 +80,27 @@
 
 		{{#ifeq section 'client'}}
 
-		$('body #videoCapture').on('change', function(e) {
+		$('body #video-upload').on('change', function(e) {
 			console.log(e);
-			saveVideo();
+			if ($('form #video-upload')[0].files[0])
+				saveVideo();
 
 		});
 
+		$('#upload-close').on('click tap touchstart', function(e) {
+			$('#upload-modal').fadeOut();
+		});
 
 		function saveVideo() {
 
 			// start loading
 			$('#loading').fadeIn();
-			var file = $('form #videoCapture')[0].files[0];
+			$('#video-upload').prop('disabled', true);
+			var file = $('form #video-upload')[0].files[0];
 			var reader = new FileReader();
 
 			reader.addEventListener("load", function () {
-				console.log(reader.result);
+				// console.log(reader.result);
 				var recordedResult = reader.result;
 				var data = {
 					url: recordedResult,
@@ -109,12 +109,13 @@
 
 				$.post("/api/upload/", { data:data },
 					function( upload ) {
-
+						$('#upload-modal').closest('.modal').fadeIn();
+						$('#loading').fadeOut();
 						$('#upload-modal').fadeIn(function() {
 							// play(true);
 							$('#recorded')[0].src = upload.url;
 
-							$('#data-send').on('click touchstart tap', function(e) {
+							$('#upload-send').on('click touchstart tap', function(e) {
 								console.log(e);
 								saveResponses(upload._id);
 							});
@@ -155,7 +156,9 @@
 				function( log ) {
 					console.log(log);
 					$('#loading').fadeOut(function() {
-						$('#upload-modal').fadeOut();
+						$('.modal, #upload-modal').fadeOut();
+						$('#upload-modal form')[0].reset();
+						$('#video-upload').prop('disabled', false);
 					});
 			});
 
@@ -273,6 +276,7 @@
 		}
 		$.post("/api/load/researchModal", data,
 			function( res ) {
+				$('#researcher-modal').closest('.modal').fadeIn();
 				$('#researcher-modal').html(res.eventData).fadeIn(function() {
 					researchContextSetup(data.group);
 				});
@@ -284,7 +288,7 @@
 			$('.select2').select2();
 
 			$('body #research-close').on('click', function(e) {
-				$('#researcher-modal').fadeOut();
+				$('.modal, #researcher-modal').fadeOut();
 			});
 
 			$('body #uploaded').on('timeupdate', function(ev) {
@@ -315,19 +319,21 @@
 			});
 
 			$('body .timestamp-category-dropdown').on("select2:select", (e) => {
-				var selected = $(this).find(":selected");
 				var data = {
 					group: group,
-					category: selected.data("id")
+					category: e.params.data.element.id
 				}
 				$.post("/api/load/marker/actions", data,
 					function( log ) {
-						$('#timestamp-actions').html(log.eventData).fadeIn();
+						$('#timestamp-actions').html(log.eventData).fadeIn(function() {
+							$(this).select2();
+							$('#add-timestamp').fadeIn();
+						});
 				});
 			});
 
 			$('body .timestamp-dropdown').on('select2:select', (e) => {
-				var selected = $('#' + e.params.data.id);
+				var selected = $('#' + e.params.data.element.id);
 				$('#uploaded')["0"].currentTime = selected.data("time");
 				var data = {
 					group: group,
@@ -340,10 +346,9 @@
 						console.log(eventData);
 						$('#research-form').html(eventData.formData);
 						$('#research-logs').html(eventData.logsData);
-						if ( eventData.responses && eventData.responses.length > 1) {
-							$('#current-response').show();
-						}
-						formFill('#research-form .question', eventData.mostRecent);
+						// if ( eventData.responses && eventData.responses.length > 1) {
+							$('#current-response').html(eventData.currentLog).fadeIn();
+						// }
 						$('#research-form').fadeIn();
 						researchContextSetup(eventData.group);
 				});
@@ -353,23 +358,28 @@
 				$('#loading').fadeIn();
 				var values = getFormData("#research-form .question");
 				var selected = $('.timestamp-dropdown').find(":selected");
-				console.log(selected.data("time"), selected.data("id"))
+				console.log(selected.data("time"), selected.prop("id"))
 
 				var data = {
 					group: group,
 					responses: values,
 					researcher: "{{user.id}}",
-					marker: selected.data("id")
+					marker: selected.prop("id")
 				}
 
 				$.post("/api/research/", data,
 					function( eventData ) {
 						console.log(eventData);
-						$('.timestamp-dropdown .timestamp').prop('selected', true);
-						formFill('#research-form .question', eventData.responses);
 
-						$('#research-logs').html(eventData.html);
-
+						if (eventData.success) {
+							$('.timestamp-dropdown .timestamp').prop('selected', true);
+							$('#research-form')[0].reset();
+							$('#success-msg').fadeIn();
+							$('#current-log').html(eventData.currentLog).fadeIn();
+							$('#research-logs').html(eventData.html);
+						} else {
+							$('#error-msg').text(eventData.err).fadeIn();
+						}
 				});
 			});
 	}

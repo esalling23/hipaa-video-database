@@ -9,18 +9,19 @@
 * ==========
 */
 --}}
+{{> signup}}
 
+<div class="container-fluid page">
 
-<div class="container home">
-
-	<div class="navigation">
-		{{#ifeq user.accessLvl 'Admin'}}
-			<h3 class="btn btn-primary" id="onboard">New Client Onboarding</h3>
-			{{> signup}}
-		{{/ifeq}}
+	<div class="navigation row">
+		<div class="inner-nav">
+			{{#ifeq user.accessLvl 'Admin'}}
+				<h4 class="nav-item" id="onboard">New Client Onboarding</h4>
+			{{/ifeq}}
+		</div>
 	</div>
 
-	<div>
+	<div class="row">
 
 		<h3>Analyze by clicking on an item below:</h3>
 

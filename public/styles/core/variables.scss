@@ -18,3 +18,23 @@ $color-violet: #7c90ff;
 $color-teal: #36d5d9;
 $color-yellow: #fbd738;
 $color-green: #00CB86;
+
+
+$color-blue: #2D4F89;
+$color-blue-light: #56A2DB;
+$color-pink: #D994A7;
+
+$color-light: #E6F0F4;
+$color-dark: #2B3135;
+$color-bg-dark: darken($color-light, 20%);
+
+$color-bg: $color-light;
+$color-bg-input: lighten($color-dark, 60%);
+
+$color-block: $color-bg-dark;
+$color-header: $color-blue;
+
+$color-text: $color-dark;
+$color-text-hover: $color-light;
+
+$color-accent: $color-pink;
