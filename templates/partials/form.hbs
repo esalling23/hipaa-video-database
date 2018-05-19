@@ -2,7 +2,7 @@
 	{{#ifeq this.type "Text"}}
 	<div class="text-input question" id="{{this.id}}">
 	<label for="{{this.key}}">{{this.question}}</label>
-		<input class="form-control input" name="{{this.question}}" label="{{this.question}}" type="text" id={{this.key}}></p>
+		<input indexof="{{@index}}" class="form-control input" name="{{this.question}}" label="{{this.question}}" type="text" id={{this.key}}></p>
 	</div>
 	{{/ifeq}}
 
@@ -23,7 +23,7 @@
 		<div class="checkmark question" id="{{this.id}}">
 			{{this.question}}
 			<label class="form-check-label">
-	      <input type="checkbox" class="form-check-input input">
+	      <input indexof="{{@index}}" type="checkbox" class="form-check-input input">
 	      {{this.answer}}
 	    </label>
 		</div>
@@ -31,7 +31,7 @@
 
 	{{#ifeq this.type "Dropdown"}}
 		<label for="{{this.id}}">{{this.question}}</label>
-		<select id="{{this.id}}" class="question form-control">
+		<select indexof="{{@index}}" id="{{this.id}}" class="question form-control">
 			<option value="Select">Select Below</option>
 			{{#each this.options}}
 				<option value="{{this}}">{{this}}</option>

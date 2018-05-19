@@ -14,6 +14,7 @@
 var keystone = require('keystone');
 var Types = keystone.Field.Types;
 
+
 /**
  * index model
  * @constructor
@@ -102,6 +103,7 @@ ClientResponseGroup.schema.pre('save', function(next) {
 
 	console.log(this);
 	var that = this;
+	var ResearcherResponse = keystone.list('ResearcherResponse');
 
 	if (that.researcherData.length > 0) {
 		_.each(that.researcherData, function(response) {

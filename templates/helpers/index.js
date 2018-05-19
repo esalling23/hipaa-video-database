@@ -60,10 +60,14 @@ module.exports = function() {
        return s;
    };
 
-     _helpers.dateFormat = function(str) {
-
-       return str;
+     _helpers.dateFormat = function(date) {
+       let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Oct", "Nov", "Dec"];
+       return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
      };
+
+     _helpers.add = function(num1, num2) {
+       return num1 + num2;
+     }
 
      _helpers.idIfy = function(str) {
         var newStr = str.replace(/[^\w\s]|_/g, "")

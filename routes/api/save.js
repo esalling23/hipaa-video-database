@@ -1,12 +1,16 @@
 var cloudinary = require('cloudinary');
 var _ = require("underscore");
 var keystone = require('keystone');
+var User = keystone.list('User');
 var Questions = keystone.list('Question');
+var Category = keystone.list('Category');
 var Response = keystone.list('ClientResponse');
 var Group = keystone.list('ClientResponseGroup');
 var Marker = keystone.list('VideoMarker');
+var ResearcherResponse = keystone.list('ResearcherResponse');
 var TemplateLoader = require('../../lib/TemplateLoader');
 var Templates = new TemplateLoader();
+var ResearchLoader = require('../../lib/ResearchLoader');
 
 exports.responses = function(req, res) {
     var currentGroup = req.body.group;
@@ -123,25 +127,28 @@ exports.marker = function(req, res) {
             newQuery.exec(function(err, result) {
               data.group = result;
 
-              questionQuery.exec(function(err, questions) {
-          			var filtered = [];
-          			_.map(questions, function(q) {
-          				_.each(q.actions, function(action) {
-          					console.log(action.key == req.body.action)
-          					if (action.key == req.body.action)
-          						filtered.push(q);
-          				});
-          			});
+              return new ResearchLoader().MarkerCategories().then(categories => {
+          			data.markerCategories = categories;
 
-          			console.log(filtered, "are the filtered Qs");
+          			return new ResearchLoader().MarkerActions();
+          		}).then(actions => {
+          			return new ResearchLoader().PlacedMarkers(result, data.markerCategories, actions);
 
-          			data.questions = filtered;
+          		}).then(groups => {
+          			data.groupedMarkers = groups;
 
-          			User.model.findOne({ _id: req.body.researcher }, function(err, user) {
-          				data.user = user;
+                return new ResearchLoader().Questions();
+
+              }).then(questions => {
+
+                data.questions = questions;
+
+                User.model.findOne({ _id: req.body.researcher }, function(err, user) {
+                  data.user = user;
 
                   Templates.Load('partials/researcherModal', data, (html) => {
 
+                    data.type = "research";
                     Templates.Load('partials/form', data, (form) => {
 
                       res.send({
@@ -152,9 +159,11 @@ exports.marker = function(req, res) {
 
                     });
 
-            			});
+                  });
                 });
-              });
+
+          		}).catch(err => console.log(err));
+
 
             });
 
@@ -169,76 +178,41 @@ exports.marker = function(req, res) {
 
 exports.research = function(req, res) {
 
-    var query = Group.model.findOne({ _id: req.body.group }).populate('researcherData');
-    query.exec(function(err, group) {
+  console.log(res.body);
 
-       console.log(group, "is the group we found")
+  var query = Group.model.findOne({ _id: req.body.group }).populate('researcherData');
+  query.exec(function(err, group) {
 
-       console.log(req.body);
-       var count = 0;
-       var newResponses = [];
+     var newResponses = [];
+     var promisedResponses = [];
 
-       _.each(req.body.responses, function(value, key) {
+    _.map(req.body.responses, function(key, value) {
+      // console.log(key, value);
+      promisedResponses.push([group, { key: key, value: value }, req.body.researcher, req.body.marker]);
+    });
 
-         var repeat = _.filter(group.researcherData, function(item){
-          return item.answer === value && item.question === key;
-         });
+    var promises = promisedResponses.map(new ResearchLoader().SaveResearch);
 
-         console.log(repeat, "is the repeater")
-
-         if (!repeat || repeat.length <= 0) {
-           newResponseGroup = new ResearcherResponse.model({
-             question: key,
-             answer: value,
-             researcher: req.body.researcher,
-             group: req.body.group,
-             marker: req.body.marker
-           });
-
-           console.log(newResponseGroup, " we just made this");
-
-           newResponseGroup.save(function(err, post) {
-             // console.log(post, " is the new response group we saved");
-             newResponses.push(post);
-             group.researcherData.push(post);
-
-             group.save(function(err, updatedGroup) {
-               // console.log(updatedGroup, "is the updated group with the saved researcher response")
-               count++;
-             });
-           });
-         } else
-           count++;
-
-         console.log(count, Object.keys(req.body.responses).length);
-         if (count == Object.keys(req.body.responses).length) {
-           query.exec(function(err, group) {
-             var previous = _.filter(group.researcherData, function(opt) {
-           			// console.log(opt);
-           			// console.log(opt.marker, req.body.marker)
-           			if (opt.marker)
-           				return opt.marker == req.body.marker;
-           	 }).reverse();
-
-             previous = _.pluck(previous, "_id");
-
-             // console.log(previous);
-
-             var dataQuery = ResearcherResponse.model.find({ "_id": { "$in": previous } }).populate("question researcher");
-
-             dataQuery.exec(function(err, logs) {
-               console.log(group, logs)
-
-               Templates.Load('partials/logs', { researchLogs: logs }, (logsHtml) => {
-                 Templates.Load('partials/current-log', {  }, (currentHtml) => {
-                   res.send({ logs: logsHtml, currentLog: currentHtml, responses: newResponses, success: true });
-                 });
-               });
-             });
-           });
-         }
-
+    Promise.all(promises).then(res => {
+      console.log(res);
+      newResponses = res;
+      return query.exec();
+    }).then(group => {
+      return new ResearchLoader().GetLogs(req.body.group, req.body.marker);
+    }).then(data => {
+      console.log(data);
+      Templates.Load('partials/logs', { researchLogs: data.logs }, (logsHtml) => {
+        Templates.Load('partials/current-log', { logs: data.currentLog }, (currentHtml) => {
+          res.send({
+            logs: logsHtml,
+            currentLog: currentHtml,
+            success: true
+          });
+        });
       });
 
-    });
+    }).catch(err => console.log(err));
+
+
+  });
 }

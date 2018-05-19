@@ -9,7 +9,7 @@
 * ==========
 */
 --}}
-{{> signup}}
+{{> signup }}
 
 <div class="container-fluid page">
 
@@ -59,12 +59,12 @@
 		{{#each uploads}}
 			<div class="video-item"
 					data-client-id="{{this.client.clientId}}"
-					data-date-created="{{dateFormat this.createdAt}}"
-					data-date-updated="{{dateFormat this.updatedAt}}"
+					data-date-created="{{this.createdAt}}"
+					data-date-updated="{{this.updatedAt}}"
 					data-group="{{this.id}}">
 				Client: {{this.client.clientId}} <br>
-				Date Uploaded: {{this.createdAt}} <br>
-				Date Updated: {{this.updatedAt}}
+				Date Uploaded: {{dateFormat this.createdAt}} <br>
+				Date Updated: {{dateFormat this.updatedAt}}
 			</div>
 		{{/each}}
 		</div>

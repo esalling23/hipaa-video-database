@@ -156,7 +156,7 @@
 				function( log ) {
 					console.log(log);
 					$('#loading').fadeOut(function() {
-						$('.modal, #upload-modal').fadeOut();
+						$('.modal, hip#upload-modal').fadeOut();
 						$('#upload-modal form')[0].reset();
 						$('#video-upload').prop('disabled', false);
 					});
@@ -335,20 +335,24 @@
 			$('body .timestamp-dropdown').on('select2:select', (e) => {
 				var selected = $('#' + e.params.data.element.id);
 				$('#uploaded')["0"].currentTime = selected.data("time");
+				$('#research-form').fadeOut();
 				var data = {
 					group: group,
 					marker: selected.prop("id"),
 					user: "{{user.id}}",
 					action: selected.data("action")
 				}
+
 				$.post("/api/load/form/", data,
 					function( eventData ) {
 						console.log(eventData);
 						$('#research-form').html(eventData.formData);
 						$('#research-logs').html(eventData.logsData);
-						// if ( eventData.responses && eventData.responses.length > 1) {
+						if ( eventData.currentLog != "" )
 							$('#current-response').html(eventData.currentLog).fadeIn();
-						// }
+						else
+							$('#current-response').fadeOut();
+
 						$('#research-form').fadeIn();
 						researchContextSetup(eventData.group);
 				});
@@ -356,6 +360,7 @@
 
 			$('body #research-send').on('click tap touchstart', function(e) {
 				$('#loading').fadeIn();
+				$('#research-form').fadeOut();
 				var values = getFormData("#research-form .question");
 				var selected = $('.timestamp-dropdown').find(":selected");
 				console.log(selected.data("time"), selected.prop("id"))
@@ -375,8 +380,13 @@
 							$('.timestamp-dropdown .timestamp').prop('selected', true);
 							$('#research-form')[0].reset();
 							$('#success-msg').fadeIn();
-							$('#current-log').html(eventData.currentLog).fadeIn();
-							$('#research-logs').html(eventData.html);
+							if ( eventData.currentLog != "" )
+								$('#current-response').html(eventData.currentLog).fadeIn();
+							else
+								$('#current-response').fadeOut();
+
+							$('#research-logs').html(eventData.logs);
+							$('#research-form').fadeIn();
 						} else {
 							$('#error-msg').text(eventData.err).fadeIn();
 						}

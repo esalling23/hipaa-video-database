@@ -1,11 +1,25 @@
 <div class="row modal-inner research">
 
-  <div class="col-md-4">
+  <div class="col-md-12 box-sm">
 
-    <div id="client-info" class="box">
-      <h4>Client Id: {{group.client.clientId}}</h4>
-      <h5>Date Uploaded: {{group.createdAt}}</h5>
+    <div class="row sm-pad">
+      <div class="col-md-4" id="client-info">
+        <h3 class="title">Client Info:</h3>
+        <h5>Client Id: {{group.client.clientId}}</h5>
+        <p>Date Uploaded: {{group.createdAt}}</p>
+      </div>
+
+      <div class="col-md-8 client-responses">
+        <h4 class="ttile">Client Responses:</h4>
+        {{#each group.responses}}
+          <p>Question {{@index}}: {{this.answer}}</p>
+        {{/each}}
+      </div>
     </div>
+
+  </div>
+
+  <div class="col-md-4">
 
     <video id="uploaded"
     oncontextmenu="return false;"
@@ -14,29 +28,23 @@
 
     <form id="timestamp-form" data-send="add-timestamp">
       Current time: <span id="current-timestamp"></span>
-      <input type="text" class="form-control" placeholder="Notes">
+      <input indexof="1" type="text" class="form-control" placeholder="Notes">
 
-      <select class="timestamp-category-dropdown form-control select2">
+      <select indexof="2" class="timestamp-category-dropdown form-control select2">
         <option>Select a marker category</option>
         {{#each markerCategories}}
         <option class="timestamp" id="{{this._id}}" data-key="{{this.key}}">{{this.name}}</option>
         {{/each}}
       </select>
 
-      <select class="timestamp-action-dropdown form-control" id="timestamp-actions" style="display:none"></select>
+      <select indexof="3" class="timestamp-action-dropdown form-control" id="timestamp-actions" style="display:none"></select>
 
-      <button style="display:none" type="button" class="btn btn-primary" id="add-timestamp">Add Video Marker</button>
+      <button indexof="4" style="display:none" type="button" class="btn btn-primary" id="add-timestamp">Add Video Marker</button>
     </form>
 
   </div>
 
   <div class="col-md-8">
-
-    <div class="client-responses box">
-      {{#each group.responses}}
-        <h4>Question {{@index}}: {{this.answer}}</h4>
-      {{/each}}
-    </div>
 
     <div class="box">
       {{#ifeqor user.accessLvl "Admin" "Analyzer"}}
