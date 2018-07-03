@@ -35,6 +35,7 @@ VideoMarker.add({
 
 	name: { type: String, default: 'Response', required: true, initial: true },
 	time: { type: String, label: 'Time' },
+	number: { type: Number, label: 'Order number based on time'},
 	notes: { type: String, label: 'Notes' },
 	researcher: {
 		type: Types.Relationship,

@@ -62,6 +62,7 @@ module.exports = function() {
 
      _helpers.dateFormat = function(date) {
        let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Oct", "Nov", "Dec"];
+       if (!date) return;
        return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
      };
 

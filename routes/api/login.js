@@ -53,7 +53,7 @@ exports.get = function(req, res) {
 
 		// console.log(user.password);
 
-	    if (err || !user) return res.json({ error_code: "no_profile", msg: "No profile for that email" });
+	    if (err || !user) return res.send({ error: "no_profile", msg: "No profile for that email" });
 			// var password = body.password.toString();
 
 			console.log(typeof body.password, typeof user.password); // returns 'string', 'string'
@@ -84,7 +84,7 @@ exports.get = function(req, res) {
 			  	console.log("wrong password");
 
 			  	res.send({
-			        error_code: "wrong_password",
+			        error: "wrong_password",
 			        msg: 'Sorry, wrong password'
 			    });
 

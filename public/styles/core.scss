@@ -14,9 +14,13 @@
 .p-3 {
 	padding: 10px;
 }
-// Use for any elements hidden initilly
-.hidden {
-	visibility: hidden;
+
+form {
+	margin-bottom: 10px;
+}
+
+#error {
+	display: none;
 }
 
 html {

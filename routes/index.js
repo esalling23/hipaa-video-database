@@ -34,7 +34,6 @@ var routes = {
     views: importRoutes('./views')
 };
 
-router.use(express.json({limit:'50mb'}));
 // Setup Route Bindings
 
 // /keystone redirect

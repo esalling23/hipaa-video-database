@@ -17,6 +17,15 @@ $('.radio-group input[type="radio"]').on('change', function(e){
 
 $('.select2').select2();
 
+var errorMsg = function(msg) {
+	$('#error').text(msg).append('<i class="glyphicon glyphicon-remove"></i>');
+	$('#error').fadeIn();
+}
+
+$('body #error').on('click tap touchstart', function(e) {
+	$(this).fadeOut();
+});
+
 var getFormData = function(formObj) {
   var values = {};
   $(formObj).each(function() {

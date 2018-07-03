@@ -6,7 +6,7 @@
       <div class="col-md-4" id="client-info">
         <h3 class="title">Client Info:</h3>
         <h5>Client Id: {{group.client.clientId}}</h5>
-        <p>Date Uploaded: {{group.createdAt}}</p>
+        <p>Date Uploaded: {{dateFormat group.createdAt}}</p>
       </div>
 
       <div class="col-md-8 client-responses">
@@ -61,10 +61,13 @@
       </select>
 
       <div id="current-response" style="display:none"></div>
+      <button type="button" style="display:none" class="btn" id="return-current">Cancel and Return to Current Response</button>
 
       <form id="research-form" data-send="research-send" data-group="{{group.id}}" data-response="">
 
       </form>
+
+      <button type="button" style="display:none" class="btn" id="edit">Edit Current Response</button>
 
       <div id="research-logs"></div>
 

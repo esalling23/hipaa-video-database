@@ -1,4 +1,4 @@
-var cloudinary = require('cloudinary');
+studvar cloudinary = require('cloudinary');
 var _ = require("underscore");
 var keystone = require('keystone');
 var User = keystone.list('User');
@@ -57,11 +57,11 @@ exports.upload = function(req, res) {
     api_key: '723551514692962',
     api_secret: 'syiIllz2Vf6VglCJWRDZFsNafD8'
   });
-  // console.log(req.body.data.user, "is the user that just uploaded that video");
+  console.log(req.body.data.user, "is the user that just uploaded that video");
   // var user = JSON.parse(req.body.data.user);
-  // console.log(user);
   // console.log(user._id);
-  cloudinary.v2.uploader.unsigned_upload(req.body.data.url, "video-database", { resource_type: "video" },
+  var dataUrl = req.body.data.url;
+  cloudinary.v2.uploader.unsigned_upload(dataUrl, "video-database", { resource_type: "video" },
     function(error, result) {
       console.log(error, result);
 

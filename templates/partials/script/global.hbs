@@ -63,6 +63,7 @@
 			};
 			console.log(data);
 			$.post('/api/login', data, function(res) {
+				if (res.error) return errorMsg(res.msg);
 				// console.log(res);
 				if ($('#loginForm #rememberMe')[0].checked){
 					console.log(data);
@@ -100,7 +101,8 @@
 			var reader = new FileReader();
 
 			reader.addEventListener("load", function () {
-				// console.log(reader.result);
+				console.log(reader.result);
+				console.log(reader.result.length);
 				var recordedResult = reader.result;
 				var data = {
 					url: recordedResult,
@@ -109,6 +111,8 @@
 
 				$.post("/api/upload/", { data:data },
 					function( upload ) {
+						if (upload.error) return errorMsg(upload.msg);
+
 						$('#upload-modal').closest('.modal').fadeIn();
 						$('#loading').fadeOut();
 						$('#upload-modal').fadeIn(function() {
@@ -129,6 +133,7 @@
 		function saveResponses(group) {
 			var values = {};
 			$('#upload-form .question').each(function() {
+
 				console.log(this.id);
 				if ($(this).find('input').length >= 1) {
 
@@ -154,6 +159,8 @@
 
 			$.post("/api/saveResponses/", { group: group, responses: values },
 				function( log ) {
+					if (res.error) return errorMsg(res.msg);
+
 					console.log(log);
 					$('#loading').fadeOut(function() {
 						$('.modal, hip#upload-modal').fadeOut();
@@ -296,6 +303,20 @@
 				$('span#current-timestamp').text(time);
 			});
 
+			$('body #edit').on('click tap touchstart', function(ev) {
+				$('#research-form').fadeIn();
+				$('#edit').fadeOut();
+				$('#current-response').fadeOut();
+				$('#return-current').fadeIn();
+			});
+
+			$('body #return-current').on('click tap touchstart', function(ev) {
+				$('#research-form').fadeOut();
+				$('#edit').fadeIn();
+				$('#current-response').fadeIn();
+				$('#return-current').fadeOut();
+			});
+
 			$('body #add-timestamp').on('click touchstart tap', function(e) {
 				console.log(location);
 
@@ -348,12 +369,14 @@
 						console.log(eventData);
 						$('#research-form').html(eventData.formData);
 						$('#research-logs').html(eventData.logsData);
-						if ( eventData.currentLog != "" )
+						if ( eventData.currentLog != "" ) {
 							$('#current-response').html(eventData.currentLog).fadeIn();
-						else
+							$('#edit').fadeIn();
+						} else {
 							$('#current-response').fadeOut();
+							$('#research-form').fadeIn();
+						}
 
-						$('#research-form').fadeIn();
 						researchContextSetup(eventData.group);
 				});
 			});
@@ -380,13 +403,15 @@
 							$('.timestamp-dropdown .timestamp').prop('selected', true);
 							$('#research-form')[0].reset();
 							$('#success-msg').fadeIn();
-							if ( eventData.currentLog != "" )
+							if ( eventData.currentLog != "" ) {
 								$('#current-response').html(eventData.currentLog).fadeIn();
-							else
+								$('#edit').fadeIn();
+							} else {
 								$('#current-response').fadeOut();
+								$('#research-form').fadeIn();
+							}
 
 							$('#research-logs').html(eventData.logs);
-							$('#research-form').fadeIn();
 						} else {
 							$('#error-msg').text(eventData.err).fadeIn();
 						}
