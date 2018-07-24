@@ -9,73 +9,97 @@ var _ = require('underscore'),
 		Questions = keystone.list('Question'),
 		Category = keystone.list('Category');
 
-
-// Researcher Modal
+// Loads Researcher Modal
 exports.researchModal = function(req, res) {
 
-	var Templates = new TemplateLoader();
-	// var ResearchLoader = new ResearchLoader();
+	const Templates = new TemplateLoader();
+	const data = {};
 
-	var data = {};
-
-	console.log(req.body);
-
-	var groupQuery = ClientResponseGroup.model.findOne({ _id: req.body.group })
+	// Set up the query for the ClientResponseGroup
+	// based on the _id field
+	const groupQuery = ClientResponseGroup.model.find()
 										.populate('client markers researcherData responses');
 
-	groupQuery.exec(function(err, result) {
-		data.group = result;
 
+	groupQuery.exec(function(err, list) {
+		// Catch errors or non-existent result
+		if (err) res.error(err);
+		if (!list) res.error("No Groups");
+
+		console.log(req.body.next);
+
+		// Determine group
+		_.each(list, function(item, i) {
+			if (item._id == req.body.group) {
+				console.log(item._id, req.body.next);
+				// If we are going to the next group
+				// find the current one and find the next one in line
+				if (req.body.next) {
+					var num = i + 1;
+					if (num >= list.length) num = 0;
+					data.group = list[num];
+					console.log(num, list.length);
+				} else
+					data.group = item;
+			}
+		});
+
+		console.log(req.body.group, data.group);
+
+		// Return the time-marker categories
 		return new ResearchLoader().MarkerCategories().then(res => {
 			data.markerCategories = res;
 
+			// Return the time-marker actions
 			return new ResearchLoader().MarkerActions();
 		}).then(actions => {
-			return new ResearchLoader().PlacedMarkers(result, data.markerCategories, actions);
-
+			// Return the already-placed time-markers based on returned actions
+			return new ResearchLoader().PlacedMarkers(data.group, data.markerCategories, actions);
 		}).then(groups => {
+			// set the groupedMarkers field on the data object to be the grouped
+			// and already-placed markers
 			data.groupedMarkers = groups;
 
+			// Locate the researcher user based on the user parameter in the body
 			User.model.findOne({ _id: req.body.user }, function(err, user) {
 				data.user = user;
 
+				// Load the researcherModal partial with the data object
 				Templates.Load('partials/researcherModal', data, (html) => {
 
-					res.send({ eventData: html, group: result._id });
+					// Send the html and the group ID for use on front-end
+					res.send({ eventData: html, group: data.group._id });
 
 				});
-
 			});
+
 		}).catch(err => console.log(err));
 
 	});
 
 };
 
+// Loads forms
 exports.form = function(req, res) {
 
-	var Templates = new TemplateLoader();
+	const Templates = new TemplateLoader();
+	const data = {};
 
-	var data = {};
-
-	console.log(req.body, "is the data we sent to the form loader");
-
+	// First get all logs
 	new ResearchLoader().GetLogs(req.body.group, req.body.marker).then(res => {
 		data.mostRecent = res.mostRecent;
 		data.logs = res.logs;
 		data.currentLog = res.currentLog;
-		return;
-	}).then(() => {
+		// Get questions that apply to this particular action
 		return new ResearchLoader().Questions(req.body.action);
 	}).then(questions => {
-		console.log(questions.length, " are the number of questions");
 		data.questions = questions;
+		// Return the user model
 		return User.model.findOne({ _id: req.body.user });
 	}).then(user => {
 		data.user = user;
 		data.type = "research";
 
-		console.log(data);
 		Templates.Load('partials/form', data, (formsHtml) => {
 
 			Templates.Load('partials/logs', { researchLogs: data.logs }, (logsHtml) => {
@@ -100,18 +124,16 @@ exports.form = function(req, res) {
 
 }
 
-
+// Load the actions associated with this marker category
 exports.markerActions = function(req, res) {
 
-	var Templates = new TemplateLoader();
-
-	var data = {};
+	const Templates = new TemplateLoader();
+	const data = {};
 
 	new ResearchLoader().MarkerActions(req.body.category).then(actions => {
 		data.markerActions = actions;
 
 		Templates.Load('partials/markerActions', data, (html) => {
-			console.log(html);
 			res.send({ eventData: html });
 		});
 	}).catch(err => console.log(err));

@@ -5,6 +5,9 @@
   "repository": {
     "type": "git"
   },
+  "scripts": {
+    "start": "node blob.js"
+  },
   "main": "app.js",
   "dependencies": {
     "app-module-path": "^1.0.6",

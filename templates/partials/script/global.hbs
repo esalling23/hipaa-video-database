@@ -15,33 +15,39 @@
 
 	$(document).ready(function() {
 
+		// Include core functions
 		{{> script/core }}
 
+		// Home page section
 		{{#ifeq section 'index'}}
 
-		if (localStorage.user) {
-			console.log(localStorage.user);
-			var data = {
+		// If there is an email in local storage
+		if (localStorage.email) {
+			const data = {
 				password: localStorage.password,
 				email: localStorage.email
-			}
+			};
+			// Post to login route
 			$.post('/api/login', { data: data }, function(res) {
-				console.log(res);
+				// Redirect to logged-in state
 				window.location = res.url;
 			});
 		}
 
+		// Login is default on homepage
 		var login = true;
-		var signupText = $('#loginToggle').data("signup");
-		var loginText = $('#loginToggle').data("login");
+		// Determine text from data attributes
+		const signupText = $('#loginToggle').data("signup");
+		const loginText = $('#loginToggle').data("login");
 		$('#loginToggle').text(signupText);
+		// Upon toggle click
 		$('#loginToggle').on('click tap touchstart', function(e) {
-
 			e.preventDefault();
 			e.bubbles = false;
 			e.stopImmediatePropagation();
 			e.stopPropagation();
 
+			// If we are on login, show sign-up and vice-versa
 			if (login) {
 				$('body #loginForm').fadeOut(function() {
 					$('#loginToggle').text(loginText);
@@ -53,74 +59,81 @@
 					$('#loginForm').fadeIn();
 				});
 			}
+			// Reset login boolean for continued toggling
 			login = !login;
 		});
 
+		// Action for login button click
 		$('body #login').on('click tap touchstart', function(e) {
-			var data = {
+			const data = {
 				email: $('#loginForm input[name="email"]').val(),
 				password: $('#loginForm input[name="password"]').val()
 			};
-			console.log(data);
+			// Post to the login api route
 			$.post('/api/login', data, function(res) {
 				if (res.error) return errorMsg(res.msg);
-				// console.log(res);
+
+				// Store login information
 				if ($('#loginForm #rememberMe')[0].checked){
-					console.log(data);
 					localStorage.password = $('#loginForm input[name="password"]').val();
 					localStorage.email = $('#loginForm input[name="email"]').val();
-					console.log(localStorage)
 				}
-
-				// console.log(res.user);
 				window.location = res.url;
 			});
 		});
 
 		{{/ifeq}}
+		// End of homepage logic
 
+
+		// Client page logic
 		{{#ifeq section 'client'}}
 
+		// When the video upload file form's input changes
 		$('body #video-upload').on('change', function(e) {
-			console.log(e);
-			if ($('form #video-upload')[0].files[0])
-				saveVideo();
-
+			// If there was a file selected, save it
+			if ($('form #video-upload')[0].files[0]) {
+				// Start loading modal
+				$('#loading').fadeIn();
+				// Don't let them try to upload something else
+				$('#video-upload').prop('disabled', true);
+				saveVideo($('form #video-upload')[0].files[0]);
+			}
 		});
 
+		// Catch for upload modal close button
 		$('#upload-close').on('click tap touchstart', function(e) {
 			$('#upload-modal').fadeOut();
 		});
 
-		function saveVideo() {
+		// Saves video from client upload
+		function saveVideo(file) {
 
-			// start loading
-			$('#loading').fadeIn();
-			$('#video-upload').prop('disabled', true);
-			var file = $('form #video-upload')[0].files[0];
-			var reader = new FileReader();
-
+			// Read file
+			const reader = new FileReader();
 			reader.addEventListener("load", function () {
-				console.log(reader.result);
-				console.log(reader.result.length);
+				// Record the result in data object
 				var recordedResult = reader.result;
 				var data = {
 					url: recordedResult,
 					user: "{{user.id}}"
 				};
 
+				// Post to upload api route
 				$.post("/api/upload/", { data:data },
 					function( upload ) {
 						if (upload.error) return errorMsg(upload.msg);
 
+						// Show the inner modal and lose the loading image
 						$('#upload-modal').closest('.modal').fadeIn();
 						$('#loading').fadeOut();
+						// Fade in the full upload modal with form questions
 						$('#upload-modal').fadeIn(function() {
-							// play(true);
 							$('#recorded')[0].src = upload.url;
-
+							// Catch for upload form submission
 							$('#upload-send').on('click touchstart tap', function(e) {
-								console.log(e);
+								$('#loading').fadeIn();
+								// Save form responses
 								saveResponses(upload._id);
 							});
 						});
@@ -130,40 +143,38 @@
 			reader.readAsDataURL(file);
 		}
 
+		// Saves responses from upload modal form questions
 		function saveResponses(group) {
 			var values = {};
 			$('#upload-form .question').each(function() {
 
-				console.log(this.id);
+				// Input form type
 				if ($(this).find('input').length >= 1) {
 
+					// Text response
 					if ($(this).find('input').prop("type") == "text") {
 						if ($(this).find('input').val().length >= 1)
 							values[this.id] = $(this).find('input').val();
-					}
+					} // Radio button response
 					else if ($(this).find('input').prop("type") == "radio"){
 						var thisRadio = $(this).find('input:checked');
-						console.log(thisRadio);
 						values[this.id] = $(thisRadio).prop("name");
-
 					}
-
-				} else if ($(this).is('select')) {
-
+				} // Drop-down selection
+				else if ($(this).is('select')) {
 					var selected = $(this).find('option:selected');
 					values[this.id] = $(selected).val();
-
 				}
 
 	    });
 
+			// Post to save responses api route
 			$.post("/api/saveResponses/", { group: group, responses: values },
 				function( log ) {
 					if (res.error) return errorMsg(res.msg);
 
-					console.log(log);
 					$('#loading').fadeOut(function() {
-						$('.modal, hip#upload-modal').fadeOut();
+						$('.modal, #upload-modal').fadeOut();
 						$('#upload-modal form')[0].reset();
 						$('#video-upload').prop('disabled', false);
 					});
@@ -190,17 +201,13 @@
 	var $grid = $(container).isotope({
 	  getSortData: {
 	    clientId: function(e) {
-				return parseInt($(e).data('client-id'))
+				return parseInt($(e).data('client-id'));
 			},
 	    dateUpdated: function(e) {
-				var int = Date.parse($(e).data('date-updated'));
-				console.log(int)
-				return  int
+				return  Date.parse($(e).data('date-updated'));
 			},
 	    dateCreated: function(e) {
-				console.log( Date.parse($(e).data('date-created')))
-				var int =  Date.parse($(e).data('date-created'));
-				return int
+				return Date.parse($(e).data('date-created'));
 			}
 	  }
 	});
@@ -290,9 +297,26 @@
 		});
 	});
 
+	$('body #research-next').on('click', function(e) {
+		console.log('this group: ', $(this).data('group'));
+		var data = {
+			group: $(this).data('group'),
+			user: "{{user.id}}",
+			next: true
+		}
+		$.post("/api/load/researchModal", data,
+			function( res ) {
+				$('#researcher-modal').html(res.eventData);
+				console.log('lets get ready for the next one: ', res.group);
+				researchContextSetup(res.group);
+		});
+	});
+
 	var researchContextSetup = function(group) {
 
 			$('.select2').select2();
+
+			$('#research-next').data('group', group);
 
 			$('body #research-close').on('click', function(e) {
 				$('.modal, #researcher-modal').fadeOut();

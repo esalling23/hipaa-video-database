@@ -32,7 +32,6 @@ var AnalysisResponseGroup = new keystone.List('AnalysisResponseGroup',
  * @main AnalysisResponseGroup
  */
 AnalysisResponseGroup.add({
-
 	name: { type: String, default: 'Response', required: true, initial: true},
 	responses: {
 		type: Types.Relationship,
@@ -57,8 +56,6 @@ AnalysisResponseGroup.add({
 		many: true,
 		label: 'Researcher Video Markers for Item'
 	}
-
-
 });
 
 /**

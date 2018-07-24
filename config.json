@@ -5,6 +5,5 @@
 		"Client Upload and Response Group Data": ["ClientResponseGroup"],
 		"Response and Analysis Individual Data": ["ResearcherResponse", "VideoMarker", "ClientResponse"],
 		"Survey Questions": ["Question", "ClientQuestions", "ResearchQuestions"]
-
-								}
+	}
 }

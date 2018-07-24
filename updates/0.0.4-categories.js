@@ -8,14 +8,18 @@ const categories = {
   "Receptive Language": ["Follows 180 degrees", "Turns to sound", "Follows one step commands when accompanies with gesture", "Follows one step command without gesture", "Responds to name", "Understands meaning of 'no'", "Looks at objects/people when named", "Follows two step commands without gesture", "Responds to three step commands without gesture"],
   "Adaptive": ["Feeds self with hands", "Drinks from open cup independently", "Uses spoon or fork to eat", "Takes off any clothing independently", "Puts on any clothing without support", "Brushes teeth independently", "Combs or brushes own hair", "Bathes or Showers independently", "Out of diapers during the day (including time trained)", "Out of diapers at night"]
 };
+const categoryIds = {};
 
 const create = function(params) {
-  var item = {
+  console.log(params, " are the parameters");
+  const item = {
     name: params[0],
     type: params[1]
   };
-  if (params[2])
-    item.parent = params[2];
+  if (params[2]) {
+    item.parent = categoryIds[params[2]];
+  }
+
 
   console.log(item);
 
@@ -23,26 +27,32 @@ const create = function(params) {
 };
 
 exports = module.exports = function(next) {
-  // var cat = _.map(categories, function(actions, cat) {
+  //
+  // const cat = _.map(categories, function(actions, cat) {
   //   return [cat, "Marker Category"];
   // });
   //
-  // var actions = _.map(categories, function(actions, cat) {
-  //   var all = [];
+  // const actions = _.map(categories, function(actions, cat) {
+  //   const all = [];
   //   _.each(actions, function(a) {
   //     all.push([a, "Marker Action", cat]);
   //   });
   //   return all;
   // });
   //
-  // var data = _.flatten(actions.concat(cat), 1);
+  // const categoryCreate = cat.map(create);
+  // const actionsCreate = _.flatten(actions, 1).map(create);
   //
-  // console.log(data, " is all of the data");
+  // Promise.all(categoryCreate).then(cats => {
+  //   console.log(cats);
+  //   _.each(cats, function(c) {
+  //     categoryIds[c.name] = c._id;
+  //   });
   //
-  // var promises = data.map(create);
-  //
-  // Promise.all(promises).then(res => {
-  //   console.log(res);
-    next();
+  //   return Promise.all(actionsCreate);
+  // }).then(acts => {
+  //   console.log(acts)
+  //   next();
   // }).catch(err => console.log(err));
+  next();
 };

@@ -1,4 +1,4 @@
-studvar cloudinary = require('cloudinary');
+var cloudinary = require('cloudinary');
 var _ = require("underscore");
 var keystone = require('keystone');
 var User = keystone.list('User');
@@ -13,15 +13,11 @@ var Templates = new TemplateLoader();
 var ResearchLoader = require('../../lib/ResearchLoader');
 
 exports.responses = function(req, res) {
-    var currentGroup = req.body.group;
-    // console.log(currentGroup, "is the current Group")
-
+    const currentGroup = req.body.group;
+    // Saves client responses to this group
    Group.model.findOne({ _id: currentGroup }, function(err, group) {
-     // console.log(group, "is the group we found")
-      console.log(req.body.responses, " are the responses we are gonna store");
-
       group.responses = [];
-      var count = 0;
+      let count = 0;
       _.each(req.body.responses, function(value, key) {
         count ++;
         newResponseGroup = new Response.model({
@@ -30,12 +26,9 @@ exports.responses = function(req, res) {
         });
 
         newResponseGroup.save(function(err, post) {
-          console.log(err, post)
           group.responses.push(post);
-          console.log(group.responses.length, count)
           if (group.responses.length == count) {
             group.save(function(err, updatedGroup) {
-              console.log("saved!", updatedGroup);
               res.send( updatedGroup );
             });
           }
@@ -50,33 +43,28 @@ exports.responses = function(req, res) {
 
 }
 
+// Stores uploaded client videos
 exports.upload = function(req, res) {
 
   cloudinary.config({
-    cloud_name: 'esalling',
-    api_key: '723551514692962',
-    api_secret: 'syiIllz2Vf6VglCJWRDZFsNafD8'
+    cloud_name: process.env.cloud_name,
+    api_key: process.env.cloud_key,
+    api_secret: process.env.cloud_secret
   });
-  console.log(req.body.data.user, "is the user that just uploaded that video");
-  // var user = JSON.parse(req.body.data.user);
-  // console.log(user._id);
-  var dataUrl = req.body.data.url;
+
+  // Grab the data url and upload it to cloudinary
+  const dataUrl = req.body.data.url;
   cloudinary.v2.uploader.unsigned_upload(dataUrl, "video-database", { resource_type: "video" },
     function(error, result) {
-      console.log(error, result);
 
-        var newUpload = new Group.model({
+        const newUpload = new Group.model({
             url: result.url,
             client: req.body.data.user
         });
 
-        console.log(newUpload, ' is the new upload...')
-
         newUpload.save(function(err, post) {
-          console.log(err, post);
           if (err) console.log(err);
             // post has been saved
-            console.log("Uploaded video!!!!   ", post);
             res.send( post );
         });
 
@@ -85,12 +73,11 @@ exports.upload = function(req, res) {
 
 exports.marker = function(req, res) {
 
-  var data = {};
+  const data = {};
 
-  var questionQuery = Questions.model.find().populate('actions');
-  var timestampQuery = Marker.model.findOne({
+  const questionQuery = Questions.model.find().populate('actions');
+  const timestampQuery = Marker.model.findOne({
     time: req.body.time,
-    notes: req.body.note,
     category: req.body.category,
     action: req.body.action,
     group: req.body.id
@@ -101,9 +88,8 @@ exports.marker = function(req, res) {
     if (marker) res.send({ err: 'Markers must be unique. This particular marker already exists.' });
 
     Group.model.findOne({ _id: req.body.id }, function(err, group) {
-       console.log(group, "is the group we found");
 
-       var thisTimestamp = new Marker.model({
+       const thisTimestamp = new Marker.model({
          time: req.body.time,
          researcher: req.body.researcher,
          notes: req.body.note,
@@ -111,8 +97,6 @@ exports.marker = function(req, res) {
          action: req.body.action,
          group: group._id
        });
-
-       console.log(thisTimestamp, "is the timestamp we added");
 
        thisTimestamp.save(function(err, timestamp) {
           if (err) res.throw(err);
@@ -176,31 +160,29 @@ exports.marker = function(req, res) {
   });
 }
 
+// Save research response
 exports.research = function(req, res) {
 
-  console.log(res.body);
-
-  var query = Group.model.findOne({ _id: req.body.group }).populate('researcherData');
+  const query = Group.model.findOne({ _id: req.body.group }).populate('researcherData');
   query.exec(function(err, group) {
 
-     var newResponses = [];
-     var promisedResponses = [];
+     const newResponses = [];
+     const promisedResponses = [];
 
     _.map(req.body.responses, function(key, value) {
       // console.log(key, value);
       promisedResponses.push([group, { key: key, value: value }, req.body.researcher, req.body.marker]);
     });
 
-    var promises = promisedResponses.map(new ResearchLoader().SaveResearch);
+    // Save all questions
+    const promises = promisedResponses.map(new ResearchLoader().SaveResearch);
 
     Promise.all(promises).then(res => {
-      console.log(res);
       newResponses = res;
       return query.exec();
     }).then(group => {
       return new ResearchLoader().GetLogs(req.body.group, req.body.marker);
     }).then(data => {
-      console.log(data);
       Templates.Load('partials/logs', { researchLogs: data.logs }, (logsHtml) => {
         Templates.Load('partials/current-log', { logs: data.currentLog }, (currentHtml) => {
           res.send({

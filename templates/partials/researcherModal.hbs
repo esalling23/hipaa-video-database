@@ -54,7 +54,9 @@
         {{#each groupedMarkers}}
         <optgroup label="{{@key}}s">
           {{#each this}}
-          <option class="timestamp" id="{{this._id}}" data-time="{{this.time}}" data-action="{{this.action}}">{{this.actionName}} ({{this.time}} sec): {{this.notes}}</option>
+          <option class="timestamp" id="{{this._id}}" data-time="{{this.time}}" data-action="{{this.action}}">
+            {{this.number}}. {{this.actionName}} ({{this.time}} sec): {{this.notes}}
+          </option>
           {{/each}}
         </optgroup>
         {{/each}}
