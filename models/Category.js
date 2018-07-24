@@ -21,7 +21,7 @@ var Types = keystone.Field.Types;
  */
 var Category = new keystone.List('Category',
 	{
-		label: 'Categorys',
+		label: 'Categories',
 		singular: 'Category',
 		autokey: { from: 'name', path: 'key', unique: true }
 	});

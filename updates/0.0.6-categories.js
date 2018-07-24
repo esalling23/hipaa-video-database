@@ -27,32 +27,32 @@ const create = function(params) {
 };
 
 exports = module.exports = function(next) {
-  //
-  // const cat = _.map(categories, function(actions, cat) {
-  //   return [cat, "Marker Category"];
-  // });
-  //
-  // const actions = _.map(categories, function(actions, cat) {
-  //   const all = [];
-  //   _.each(actions, function(a) {
-  //     all.push([a, "Marker Action", cat]);
-  //   });
-  //   return all;
-  // });
-  //
-  // const categoryCreate = cat.map(create);
-  // const actionsCreate = _.flatten(actions, 1).map(create);
-  //
-  // Promise.all(categoryCreate).then(cats => {
-  //   console.log(cats);
-  //   _.each(cats, function(c) {
-  //     categoryIds[c.name] = c._id;
-  //   });
-  //
-  //   return Promise.all(actionsCreate);
-  // }).then(acts => {
-  //   console.log(acts)
-  //   next();
-  // }).catch(err => console.log(err));
+  
+  const cat = _.map(categories, function(actions, cat) {
+    return [cat, "Marker Category"];
+  });
+
+  const actions = _.map(categories, function(actions, cat) {
+    const all = [];
+    _.each(actions, function(a) {
+      all.push([a, "Marker Action", cat]);
+    });
+    return all;
+  });
+
+  const categoryCreate = cat.map(create);
+  const actionsCreate = _.flatten(actions, 1).map(create);
+
+  Promise.all(categoryCreate).then(cats => {
+    console.log(cats);
+    _.each(cats, function(c) {
+      categoryIds[c.name] = c._id;
+    });
+
+    return Promise.all(actionsCreate);
+  }).then(acts => {
+    console.log(acts)
+    next();
+  }).catch(err => console.log(err));
   next();
 };
