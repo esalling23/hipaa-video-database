@@ -47,9 +47,9 @@ exports.responses = function(req, res) {
 exports.upload = function(req, res) {
 
   cloudinary.config({
-    cloud_name: process.env.cloud_name,
-    api_key: process.env.cloud_key,
-    api_secret: process.env.cloud_secret
+    cloud_name: 'esalling',
+    api_key: '723551514692962',
+    api_secret: 'syiIllz2Vf6VglCJWRDZFsNafD8'
   });
 
   console.log(process.env.cloud_name);
