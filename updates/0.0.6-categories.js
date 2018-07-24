@@ -27,7 +27,7 @@ const create = function(params) {
 };
 
 exports = module.exports = function(next) {
-  
+
   const cat = _.map(categories, function(actions, cat) {
     return [cat, "Marker Category"];
   });
@@ -44,7 +44,7 @@ exports = module.exports = function(next) {
   const actionsCreate = _.flatten(actions, 1).map(create);
 
   Promise.all(categoryCreate).then(cats => {
-    console.log(cats);
+
     _.each(cats, function(c) {
       categoryIds[c.name] = c._id;
     });
