@@ -55,7 +55,7 @@ Category.schema.pre('save', function(next) {
 
 	if (that.type == 'Marker Action' && !that.parent) {
 
-		for (let category of categories) {
+		for (let category in categories) {
 			if (categories[category].includes(that.name)) {
 				Category.model.find({'name': category}).exec(function(err, result) {
 					that.parent = result;
