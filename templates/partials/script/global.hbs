@@ -175,10 +175,11 @@
 					if (res.error) return errorMsg(res.msg);
 
 					$('body #loading').fadeOut(function() {
-						$('.modal, #upload-modal').fadeOut();
-						$('#upload-modal form')[0].reset();
-						$('#upload-modal form').show();
-						$('#video-upload').prop('disabled', false);
+						$('.modal, #upload-modal').fadeOut(function() {
+							$('#upload-modal form')[0].reset();
+							$('#upload-modal form').show();
+							$('#video-upload').prop('disabled', false);
+						});
 					});
 			});
 
