@@ -94,7 +94,7 @@
 			// If there was a file selected, save it
 			if ($('form #video-upload')[0].files[0]) {
 				// Start loading modal
-				$('#loading').fadeIn();
+				$('body #loading').fadeIn();
 				// Don't let them try to upload something else
 				$('#video-upload').prop('disabled', true);
 				saveVideo($('form #video-upload')[0].files[0]);
@@ -126,13 +126,13 @@
 
 						// Show the inner modal and lose the loading image
 						$('#upload-modal').closest('.modal').fadeIn();
-						$('#loading').fadeOut();
+						$('body #loading').fadeOut();
 						// Fade in the full upload modal with form questions
 						$('#upload-modal').fadeIn(function() {
 							$('#recorded')[0].src = upload.url;
 							// Catch for upload form submission
 							$('#upload-send').on('click touchstart tap', function(e) {
-								$('#loading').fadeIn();
+								$('body #loading').fadeIn();
 								$('#upload-modal form').hide();
 								// Save form responses
 								saveResponses(upload._id);
@@ -174,7 +174,7 @@
 				function( res ) {
 					if (res.error) return errorMsg(res.msg);
 
-					$('#loading').fadeOut(function() {
+					$('body #loading').fadeOut(function() {
 						$('.modal, #upload-modal').fadeOut();
 						$('#upload-modal form')[0].reset();
 						$('#upload-modal form').show();
