@@ -52,6 +52,8 @@ exports.upload = function(req, res) {
     api_secret: process.env.cloud_secret
   });
 
+  console.log(process.env.cloud_name);
+
   // Grab the data url and upload it to cloudinary
   const dataUrl = req.body.data.url;
   cloudinary.v2.uploader.unsigned_upload(dataUrl, "video-database", { resource_type: "video" },
