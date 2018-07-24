@@ -47,29 +47,29 @@ Category.add({
 		filters: { type: 'Marker Category' }
 	}
 });
-
-Category.schema.pre('save', function(next) {
-
-	console.log(this);
-	var that = this;
-
-	if (that.type == 'Marker Action' && !that.parent) {
-
-		for (let category in categories) {
-			if (categories[category].includes(that.name)) {
-				Category.model.find({'name': category}).exec(function(err, result) {
-					that.parent = result;
-
-					next();
-
-				});
-			}
-		}
-
-	} else
-    next();
-
-});
+// 
+// Category.schema.pre('save', function(next) {
+//
+// 	console.log(this);
+// 	var that = this;
+//
+// 	if (that.type == 'Marker Action' && !that.parent) {
+//
+// 		for (let category in categories) {
+// 			if (categories[category].includes(that.name)) {
+// 				Category.model.find({'name': category}).exec(function(err, result) {
+// 					that.parent = result;
+//
+// 					next();
+//
+// 				});
+// 			}
+// 		}
+//
+// 	} else
+//     next();
+//
+// });
 
 /**
  * Model Registration
