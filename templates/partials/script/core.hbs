@@ -6,7 +6,7 @@ $('form input').keyup(function(event) {
 		}
 });
 
-$('#loading').hide();
+$('body #loading').hide();
 
 $('.radio-group input[type="radio"]').on('change', function(e){
 	var group = $(this).closest('.radio-wrapper').closest('.radio-group');
