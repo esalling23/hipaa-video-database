@@ -133,6 +133,7 @@
 							// Catch for upload form submission
 							$('#upload-send').on('click touchstart tap', function(e) {
 								$('#loading').fadeIn();
+								$('#upload-modal form').hide();
 								// Save form responses
 								saveResponses(upload._id);
 							});
@@ -170,12 +171,13 @@
 
 			// Post to save responses api route
 			$.post("/api/saveResponses/", { group: group, responses: values },
-				function( log ) {
+				function( res ) {
 					if (res.error) return errorMsg(res.msg);
 
 					$('#loading').fadeOut(function() {
 						$('.modal, #upload-modal').fadeOut();
 						$('#upload-modal form')[0].reset();
+						$('#upload-modal form').show();
 						$('#video-upload').prop('disabled', false);
 					});
 			});
