@@ -23,4 +23,4 @@ exports.create = {
 			password: 'clientName'
 		}
 	]
-};
+}

@@ -11,46 +11,39 @@
  *
  * ==========
  */
-var keystone = require('keystone'),
-    ClientQuestions = keystone.list('ClientQuestions'),
-    Client = keystone.list("User"),
-    _ = require('underscore');
+const keystone = require('keystone')
+const ClientQuestions = keystone.list('ClientQuestions')
+const Client = keystone.list('User')
 
-exports = module.exports = function(req, res) {
+exports = module.exports = function (req, res) {
+  const view = new keystone.View(req, res)
+  const locals = res.locals
+  console.log(req.params)
+  // Init locals
+  locals.section = 'client'
 
-    var view = new keystone.View(req, res),
-        locals = res.locals;
-        console.log(req.params);
-    // Init locals
-    locals.section = 'client';
+  view.on('init', function (next) {
+    const queryClientQuestions = ClientQuestions.model.findOne({}, {}, {
+      sort: {
+        'createdAt': -1
+      }
+    }).populate('questions')
 
-    view.on('init', function(next) {
+    queryClientQuestions.exec(function (err, result) {
+      if (err) throw err
 
-        var queryClientQuestions = ClientQuestions.model.findOne({}, {}, {
-            sort: {
-                'createdAt': -1
-            }
-        }).populate('questions');
+      locals.questionaire = result
 
-        queryClientQuestions.exec(function(err, result) {
-            if (err) throw err;
+      Client.model.findOne({
+        _id: req.params.id
+      }).exec(function (err, user) {
+        console.log(err, user)
 
-            locals.questionaire = result;
-
-            Client.model.findOne({ _id: req.params.id }).exec(function(err, user) {
-
-              console.log(err, user);
-
-              locals.user = user;
-              next();
-
-            });
-
-        });
-
-    });
-
-    // Render the view
-    view.render('client');
-
-};
+        locals.user = user
+        next()
+      })
+    })
+  })
+  // Render the view
+  view.render('client')
+}

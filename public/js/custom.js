@@ -13,18 +13,14 @@
  * @param {jQuery selector} parentElem - The parent element containing image.
  * @param {function} callback - The callback function.
  */
-imageLoaded = function(parentElem, callback) {
+const imageLoaded = function (parentElem, callback) {
+  parentElem.find('img').last().on('load', function () {
+    // Image loaded, callback fires
+    callback()
+  }).each(function () {
+    // Force image to dispatch 'load' (cache workaround)
+    if (this.complete) $(this).load()
+  })
+}
 
-	parentElem.find('img').last().on('load', function() {
-
-		// Image loaded, callback fires
-		callback();
-
-	}).each(function() {
-
-		// Force image to dispatch 'load' (cache workaround)
-	  if(this.complete) $(this).load();
-
-	});
-
-};
+module.exports = imageLoaded

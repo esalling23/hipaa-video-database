@@ -1,59 +1,77 @@
-var keystone = require('keystone');
-var Types = keystone.Field.Types;
+const keystone = require('keystone')
+const Types = keystone.Field.Types
 
 /**
  * User Model
  * ==========
  */
 
-var User = new keystone.List('User', {
-	track: true
-});
+const User = new keystone.List('User', {
+  track: true
+})
 
 User.add({
-	name: { type: String, required: true, index: true },
-	email: { type: Types.Email, initial: true, required: true, index: true },
-	password: { type: Types.Password, initial: true, required: true },
-	clientId: { type: String }
+  name: {
+    type: String,
+    required: true,
+    index: true
+  },
+  email: {
+    type: Types.Email,
+    initial: true,
+    required: true,
+    index: true
+  },
+  password: {
+    type: Types.Password,
+    initial: true,
+    required: true
+  },
+  clientId: {
+    type: String
+  }
 }, 'Permissions', {
-	isAdmin: { type: Boolean, label: 'Is an admin', index: true, note: 'This gives acces to Keystone CMS' },
-	isResearcher: { type: Boolean, label: 'Is a researcher', index: true },
-	accessLvl: { type: Types.Select, options: 'Assistant, Analyzer, Admin' }
-});
+  isAdmin: {
+    type: Boolean,
+    label: 'Is an admin',
+    index: true,
+    note: 'This gives acces to Keystone CMS'
+  },
+  isResearcher: {
+    type: Boolean,
+    label: 'Is a researcher',
+    index: true
+  },
+  accessLvl: {
+    type: Types.Select,
+    options: 'Assistant, Analyzer, Admin'
+  }
+})
 
 // Provide access to Keystone
-User.schema.virtual('canAccessKeystone').get(function() {
-	return this.isAdmin;
-});
+User.schema.virtual('canAccessKeystone').get(function () {
+  return this.isAdmin
+})
 
+User.schema.pre('save', function (next) {
+  console.log(this)
+  const that = this
 
-User.schema.pre('save', function(next) {
+  if (that.isResearcher && that.accessLvl === 'Admin') that.isAdmin = true
 
-	console.log(this);
-	var that = this;
+  if (!this.clientId && !this.isResearcher) {
+    User.model.find().exec().then(result => {
+      const id = result.length
+      that.clientId = 'client_' + id
 
-	if (that.isResearcher && that.accessLvl == 'Admin')
-		that.isAdmin = true;
-
-	if (!this.clientId && !this.isResearcher) {
-
-		User.model.find().exec(function(err, result) {
-			var id = result.length;
-			that.clientId = 'client_' + id;
-
-			next();
-
-		});
-
-	} else
-    next();
-
-});
-
+      next()
+    })
+  } else next()
+})
 
 /**
  * Registration
  */
 
-User.defaultColumns = 'name, email, isAdmin';
-User.register();
+User.defaultColumns = 'name, email, isAdmin'
+User.register()

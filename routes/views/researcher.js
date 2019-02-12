@@ -11,69 +11,55 @@
  *
  * ==========
  */
-var keystone = require('keystone'),
-    ResearcherQuestions = keystone.list('ResearchQuestions'),
-    Responses = keystone.list('ClientResponseGroup'),
-    Researcher = keystone.list('User'),
-    Filter = keystone.list("Filter"),
-    _ = require('underscore');
+const keystone = require('keystone')
+const ResearcherQuestions = keystone.list('ResearchQuestions')
+const Responses = keystone.list('ClientResponseGroup')
+const Researcher = keystone.list('User')
+const Filter = keystone.list('Filter')
+const _ = require('underscore')
 
-exports = module.exports = function(req, res) {
+exports = module.exports = function (req, res) {
+  const view = new keystone.View(req, res)
+  const locals = res.locals
 
-    var view = new keystone.View(req, res),
-        locals = res.locals;
+  // Init locals
+  locals.section = 'researcher'
 
-    // Init locals
-    locals.section = 'researcher';
+  view.on('init', function (next) {
+    const queryResearcherQ = ResearcherQuestions.model.findOne({}, {}, {
+      sort: {
+        'createdAt': -1
+      }
+    }).populate('questions')
 
-    view.on('init', function(next) {
+    const queryUploads = Responses.model.find({}, {}, {
+      sort: {
+        'createdAt': -1
+      }
+    }).populate('questions markers client researcherData')
 
-        var queryResearcherQ = ResearcherQuestions.model.findOne({}, {}, {
-            sort: {
-                'createdAt': -1
-            }
-        }).populate('questions');
+    queryResearcherQ.exec()
+      .then(result => {
+        locals.questionaire = result
+        return queryUploads.exec()
+      })
+      .then(uploads => {
+        uploads = _.filter(uploads, function (u) {
+          return u.responses.length > 0
+        })
+        locals.uploads = uploads
+        return Filter.model.find({})
+      })
+      .then(filters => {
+        locals.filters = filters
+        return Researcher.model.findOne({ _id: req.params.id })
+      }).then(user => {
+        locals.user = user
+        next()
+      })
+      .catch(console.error)
+  })
 
-        var queryUploads = Responses.model.find({}, {}, {
-            sort: {
-                'createdAt': -1
-            }
-        }).populate('questions markers client researcherData');
-
-        queryResearcherQ.exec(function(err, result) {
-            if (err) throw err;
-
-            locals.questionaire = result;
-
-            queryUploads.exec(function(err, uploads) {
-              uploads = _.filter(uploads, function(u) {
-                return u.responses.length > 0;
-              });
-              
-              locals.uploads = uploads;
-              console.log(uploads);
-
-              Filter.model.find({}).exec(function(err, filters){
-                locals.filters = filters;
-
-                Researcher.model.findOne({ _id: req.params.id }).exec(function(err, user) {
-
-                  console.log(err, user);
-
-                  locals.user = user;
-                  next();
-
-                });
-
-              });
-
-            });
-
-        });
-
-    });
-
-    // Render the view
-    view.render('researcher');
-
-};
+  // Render the view
+  view.render('researcher')
+}

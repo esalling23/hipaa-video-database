@@ -11,24 +11,18 @@
  *
  * ==========
  */
-var keystone = require('keystone'),
-    _ = require('underscore');
+const keystone = require('keystone')
 
-exports = module.exports = function(req, res) {
+exports = module.exports = function (req, res) {
+  const view = new keystone.View(req, res)
+  const locals = res.locals
 
-    var view = new keystone.View(req, res),
-        locals = res.locals;
+  // Init locals
+  locals.section = 'index'
 
-    // Init locals
-    locals.section = 'index';
-
-    view.on('init', function(next) {
-
-        next();
-
-    });
-
-    // Render the view
-    view.render('index');
-
-};
+  view.on('init', function (next) {
+    next()
+  })
+  // Render the view
+  view.render('index')
+}
