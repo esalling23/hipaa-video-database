@@ -5,6 +5,9 @@
   "repository": {
     "type": "git"
   },
+  "engines": {
+    "node": "10.15.0"
+  },
   "scripts": {
     "start": "node blob.js"
   },
